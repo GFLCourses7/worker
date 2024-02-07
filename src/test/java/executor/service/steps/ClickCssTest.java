@@ -1,6 +1,6 @@
 package executor.service.steps;
 
-import executor.service.model.StepDTO;
+import executor.service.model.Step;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ClickCssTest {
-    private StepDTO step;
+    private Step step;
     private StepExecution stepExecution;
 
     @BeforeEach
     void setUp() {
-        step = new StepDTO("clickCss", "body > ul > li:nth-child(1) > a");
+        step = new Step("clickCss", "body > ul > li:nth-child(1) > a");
     }
 
     @Test

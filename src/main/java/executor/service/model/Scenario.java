@@ -3,15 +3,15 @@ package executor.service.model;
 import java.util.List;
 import java.util.Objects;
 
-public class ScenarioDTO {
+public class Scenario {
     String name;
     String site;
-    List<StepDTO> steps;
+    List<Step> steps;
 
-    public ScenarioDTO() {
+    public Scenario() {
     }
 
-    public ScenarioDTO(String name, String site, List<StepDTO> steps) {
+    public Scenario(String name, String site, List<Step> steps) {
         this.name = name;
         this.site = site;
         this.steps = steps;
@@ -33,11 +33,11 @@ public class ScenarioDTO {
         this.site = site;
     }
 
-    public List<StepDTO> getSteps() {
+    public List<Step> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<StepDTO> steps) {
+    public void setSteps(List<Step> steps) {
         this.steps = steps;
     }
 
@@ -45,7 +45,7 @@ public class ScenarioDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ScenarioDTO that = (ScenarioDTO) o;
+        Scenario that = (Scenario) o;
         return Objects.equals(name, that.name) && Objects.equals(site, that.site) && Objects.equals(steps, that.steps);
     }
 

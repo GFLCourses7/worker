@@ -8,23 +8,23 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ScenarioDTOTest {
-    private ScenarioDTO scenario1;
-    private ScenarioDTO scenario2;
-    private ScenarioDTO scenario3;
+public class ScenarioTest {
+    private Scenario scenario1;
+    private Scenario scenario2;
+    private Scenario scenario3;
 
     @BeforeEach
     public void setUp() {
-        List<StepDTO> steps1 = new ArrayList<>();
-        steps1.add(new StepDTO("Step1", "Action1"));
-        steps1.add(new StepDTO("Step2", "Action2"));
-        List<StepDTO> steps2 = new ArrayList<>();
-        steps2.add(new StepDTO("Step1", "Action1"));
-        steps2.add(new StepDTO("Step2", "Action2"));
+        List<Step> steps1 = new ArrayList<>();
+        steps1.add(new Step("Step1", "Action1"));
+        steps1.add(new Step("Step2", "Action2"));
+        List<Step> steps2 = new ArrayList<>();
+        steps2.add(new Step("Step1", "Action1"));
+        steps2.add(new Step("Step2", "Action2"));
 
-        scenario1 = new ScenarioDTO("Scenario1", "Site1", steps1);
-        scenario2 = new ScenarioDTO("Scenario1", "Site1", steps2);
-        scenario3 = new ScenarioDTO("Scenario2", "Site2", new ArrayList<>());
+        scenario1 = new Scenario("Scenario1", "Site1", steps1);
+        scenario2 = new Scenario("Scenario1", "Site1", steps2);
+        scenario3 = new Scenario("Scenario2", "Site2", new ArrayList<>());
     }
 
     @Test

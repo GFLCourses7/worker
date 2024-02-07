@@ -2,32 +2,32 @@ package executor.service.model;
 
 import java.util.Objects;
 
-public class ProxyConfigHolderDTO {
-    private ProxyNetworkConfigDTO proxyNetworkConfig;
-    private ProxyCredentialsDTO proxyCredentials;
+public class ProxyConfigHolder {
+    private ProxyNetworkConfig proxyNetworkConfig;
+    private ProxyCredentials proxyCredentials;
 
 
-    public ProxyConfigHolderDTO() {
+    public ProxyConfigHolder() {
     }
 
-    public ProxyConfigHolderDTO(ProxyNetworkConfigDTO proxyNetworkConfig, ProxyCredentialsDTO proxyCredentials) {
+    public ProxyConfigHolder(ProxyNetworkConfig proxyNetworkConfig, ProxyCredentials proxyCredentials) {
         this.proxyNetworkConfig = proxyNetworkConfig;
         this.proxyCredentials = proxyCredentials;
     }
 
-    public ProxyNetworkConfigDTO getProxyNetworkConfig() {
+    public ProxyNetworkConfig getProxyNetworkConfig() {
         return proxyNetworkConfig;
     }
 
-    public void setProxyNetworkConfig(ProxyNetworkConfigDTO proxyNetworkConfig) {
+    public void setProxyNetworkConfig(ProxyNetworkConfig proxyNetworkConfig) {
         this.proxyNetworkConfig = proxyNetworkConfig;
     }
 
-    public ProxyCredentialsDTO getProxyCredentials() {
+    public ProxyCredentials getProxyCredentials() {
         return proxyCredentials;
     }
 
-    public void setProxyCredentials(ProxyCredentialsDTO proxyCredentials) {
+    public void setProxyCredentials(ProxyCredentials proxyCredentials) {
         this.proxyCredentials = proxyCredentials;
     }
 
@@ -35,7 +35,7 @@ public class ProxyConfigHolderDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ProxyConfigHolderDTO that = (ProxyConfigHolderDTO) o;
+        ProxyConfigHolder that = (ProxyConfigHolder) o;
         return Objects.equals(proxyNetworkConfig, that.proxyNetworkConfig) && Objects.equals(proxyCredentials, that.proxyCredentials);
     }
 

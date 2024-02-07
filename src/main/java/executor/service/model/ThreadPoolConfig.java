@@ -2,14 +2,14 @@ package executor.service.model;
 
 import java.util.Objects;
 
-public class ThreadPoolConfigDTO {
+public class ThreadPoolConfig {
     private Integer corePoolSize;
     private Long keepAliveTime;
 
-    public ThreadPoolConfigDTO() {
+    public ThreadPoolConfig() {
     }
 
-    public ThreadPoolConfigDTO(Integer corePoolSize, Long keepAliveTime) {
+    public ThreadPoolConfig(Integer corePoolSize, Long keepAliveTime) {
         this.corePoolSize = corePoolSize;
         this.keepAliveTime = keepAliveTime;
     }
@@ -34,7 +34,7 @@ public class ThreadPoolConfigDTO {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ThreadPoolConfigDTO that = (ThreadPoolConfigDTO) o;
+        ThreadPoolConfig that = (ThreadPoolConfig) o;
         return Objects.equals(corePoolSize, that.corePoolSize) && Objects.equals(keepAliveTime, that.keepAliveTime);
     }
 
