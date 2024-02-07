@@ -1,10 +1,10 @@
-package executor.service;
+package executor.service.steps;
 
 import executor.service.model.StepDTO;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-public class ClickCss implements StepExecution{
+public class ClickCss implements StepExecution {
     @Override
     public String getStepAction() {
         return ClickCss.class.getSimpleName();
