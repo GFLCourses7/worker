@@ -3,10 +3,10 @@ package executor.service.model;
 import java.util.Objects;
 
 public class WebDriverConfig {
-    String webDriverExecutable;
-    String userAgent;
-    Long pageLoadTimeout;
-    Long implicitlyWait;
+    private String webDriverExecutable;
+    private String userAgent;
+    private Long pageLoadTimeout;
+    private Long implicitlyWait;
 
     public WebDriverConfig() {
     }
