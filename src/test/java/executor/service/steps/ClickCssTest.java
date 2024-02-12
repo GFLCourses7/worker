@@ -1,6 +1,7 @@
 package executor.service.steps;
 
 import executor.service.model.Step;
+import executor.service.utils.StepAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
@@ -26,7 +27,7 @@ public class ClickCssTest {
         // Act
         String stepAction = stepExecution.getStepAction();
         // Assert
-        assertEquals("ClickCss", stepAction);
+        assertEquals(StepAction.CLICK_CSS.label, stepAction);
     }
 
     @Test
