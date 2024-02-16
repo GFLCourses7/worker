@@ -1,7 +1,7 @@
 package executor.service.utils;
 
 public enum StepAction {
-    CLICK_CSS("clickCss"),SLEEP("sleep");;
+    CLICK_CSS("clickCss"),SLEEP("sleep");
 
     public final String label;
 
