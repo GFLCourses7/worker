@@ -7,10 +7,14 @@ import org.openqa.selenium.WebDriver;
 
 public class ScenarioExecutorService implements ScenarioExecutor {
 
+    private final StepExecutionFactory stepExecutionFactory;
+
+    public ScenarioExecutorService(StepExecutionFactory stepExecutionFactory) {
+        this.stepExecutionFactory = stepExecutionFactory;
+    }
+
     @Override
     public void execute(Scenario scenario, WebDriver webDriver) {
-
-        StepExecutionFactory stepExecutionFactory = new StepExecutionFactory();
         scenario.getSteps().forEach(step -> {
             StepExecution stepExecution = stepExecutionFactory.createStepExecution(step.getAction());
             stepExecution.step(webDriver, step);
