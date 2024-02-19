@@ -56,9 +56,7 @@ class ProxySourcesClientLoaderTest {
 
             proxySourcesClient = new ProxySourcesClientLoader();
 
-            assertThrows(NoSuchElementException.class, () -> {
-                proxySourcesClient.getProxy();
-            });
+            assertThrows(NoSuchElementException.class, () -> proxySourcesClient.getProxy());
         }
     }
 
