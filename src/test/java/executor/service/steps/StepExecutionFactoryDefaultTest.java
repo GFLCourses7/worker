@@ -57,11 +57,11 @@ public class StepExecutionFactoryDefaultTest {
 
         String nonExistentAction = "nonExistentAction";
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
             stepExecutionFactoryDefault.createStepExecution(nonExistentAction);
         });
 
-        String expectedValue = String.format("ERROR: Value %s doesn't match any step.", nonExistentAction);
+        String expectedValue = String.format("Value %s doesn't match any step.", nonExistentAction);
         String actualValue = exception.getMessage();
 
         assertEquals(expectedValue, actualValue);

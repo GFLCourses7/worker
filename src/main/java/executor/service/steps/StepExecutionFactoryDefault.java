@@ -15,24 +15,19 @@ public class StepExecutionFactoryDefault implements StepExecutionFactory {
                 .findFirst();
 
         // Replace with proper logging later
-        if (!optionalStepAction.isPresent())
-            throw new RuntimeException(String.format("ERROR: Value %s doesn't match any step.", stepAction));
-
+        if (optionalStepAction.isEmpty())
+            throw new IllegalArgumentException(String.format("Value %s doesn't match any step.", stepAction));
 
         StepExecution stepExecution = null;
         switch (optionalStepAction.get()) {
-
-            case CLICK_CSS: {
+            case CLICK_CSS -> {
                 stepExecution = new ClickCss();
-                break;
             }
-            case CLICK_XPATH: {
+            case CLICK_XPATH -> {
                 stepExecution = new ClickXpath();
-                break;
             }
-            case SLEEP: {
+            case SLEEP -> {
                 stepExecution = new Sleep();
-                break;
             }
         }
 
