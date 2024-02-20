@@ -1,10 +1,10 @@
 package executor.service.utils;
 
-import com.google.gson.reflect.TypeToken;
 import executor.service.exception.ConfigFileNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,15 +17,14 @@ public class JsonConfigReaderTest {
 
     @Test
     void testReadFile_Success() {
-        List<String> fakeResult = List.of("fake test");
+        List<String> fakeResult = new ArrayList<>();
+        fakeResult.add("fake test");
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
             utilities.when(() -> JsonConfigReader.readFile(anyString(), any()))
                     .thenReturn(fakeResult);
 
-            assertEquals(JsonConfigReader.readFile("config.json", new TypeToken<List<String>>() {
-            }
-                    .getType()), List.of("fake test"));
+            assertEquals(JsonConfigReader.readFile("config.json", String.class), fakeResult);
         }
     }
 
@@ -37,10 +36,7 @@ public class JsonConfigReaderTest {
                     .thenThrow(new ConfigFileNotFoundException());
 
             assertThrows(ConfigFileNotFoundException.class, () ->
-                    JsonConfigReader.readFile("config.json", new TypeToken<List<String>>() {
-                    }
-                            .getType())
-            );
+                    JsonConfigReader.readFile("config.json", String.class));
         }
     }
 }

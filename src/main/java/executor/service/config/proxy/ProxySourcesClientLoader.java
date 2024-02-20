@@ -1,6 +1,5 @@
 package executor.service.config.proxy;
 
-import com.google.gson.reflect.TypeToken;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
@@ -21,15 +20,10 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
     }
 
     private List<ProxyConfigHolder> readProxyConfigs() {
-        List<ProxyCredentials> credentialsList = JsonConfigReader.readFile(PROXY_CREDENTIALS_JSON,
-                new TypeToken<List<ProxyCredentials>>() {
-                }
-                        .getType());
-        List<ProxyNetworkConfig> networkConfigList = JsonConfigReader.readFile(PROXY_NETWORK_CONFIG_JSON,
-                new TypeToken<List<ProxyNetworkConfig>>() {
-                }
-                        .getType());
-
+        List<ProxyCredentials> credentialsList =
+                JsonConfigReader.readFile(PROXY_CREDENTIALS_JSON, ProxyCredentials.class);
+        List<ProxyNetworkConfig> networkConfigList =
+                JsonConfigReader.readFile(PROXY_NETWORK_CONFIG_JSON, ProxyNetworkConfig.class);
         List<ProxyConfigHolder> configHolderList = new ArrayList<>();
 
         for (int i = 0; i < Math.min(credentialsList.size(), networkConfigList.size()); i++) {

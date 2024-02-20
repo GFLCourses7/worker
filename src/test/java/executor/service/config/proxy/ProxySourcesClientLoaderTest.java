@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -34,11 +35,16 @@ class ProxySourcesClientLoaderTest {
 
     @Test
     public void testGetProxy() {
+        List<ProxyNetworkConfig> fakeProxyNetworkConfigList = new ArrayList<>();
+        fakeProxyNetworkConfigList.add(fakeProxyNetworkConfig);
+        List<ProxyCredentials> fakeProxyCredentialsList = new ArrayList<>();
+        fakeProxyCredentialsList.add(fakeProxyCredentials);
+
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
             utilities.when(() -> JsonConfigReader.readFile(eq("ProxyNetwork.json"), any()))
-                    .thenReturn(List.of(fakeProxyNetworkConfig));
+                    .thenReturn(fakeProxyNetworkConfigList);
             utilities.when(() -> JsonConfigReader.readFile(eq("ProxyCredentials.json"), any()))
-                    .thenReturn(List.of(fakeProxyCredentials));
+                    .thenReturn(fakeProxyCredentialsList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
             ProxyConfigHolder proxy = proxySourcesClient.getProxy();
