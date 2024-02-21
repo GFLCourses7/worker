@@ -2,23 +2,25 @@ package executor.service.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import executor.service.exception.ConfigFileNotFoundException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JsonConfigReader {
-    private static final Logger logger = Logger.getLogger(JsonConfigReader.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(JsonConfigReader.class.getName());
 
     public static <T> List<T> readFile(String configFile, Class<T> valueType) {
+        LOGGER.info("Reading config file: " + configFile);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(new File(configFile), objectMapper.getTypeFactory().constructCollectionType(List.class, valueType));
         } catch (IOException e) {
             String msg = "Error reading JSON file: " + configFile;
-            logger.log(Level.SEVERE, msg, e);
+
+            LOGGER.error(msg);
             throw new ConfigFileNotFoundException(msg);
         }
     }
