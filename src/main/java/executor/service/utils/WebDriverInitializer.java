@@ -1,5 +1,6 @@
 package executor.service.utils;
 
+import executor.service.config.proxy.ProxySourcesClientLoader;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
@@ -8,18 +9,23 @@ import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.CapabilityType;
 import java.time.Duration;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class WebDriverInitializer {
     private static final Logger LOGGER = Logger.getLogger(WebDriverInitializer.class.getName());
 
-    public WebDriver init(WebDriverConfig webDriverConfig, ProxyConfigHolder proxyConfigHolder) {
+    public WebDriver init() {
         LOGGER.log(Level.INFO, "Initializing WebDriver...");
 
+        WebDriverConfig webDriverConfig = WebDriverConfigExecutor.loadConfigFromFile();
+        ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
+
         // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+        System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializer.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
 
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();
@@ -30,10 +36,11 @@ public class WebDriverInitializer {
         }
 
         // Set proxy if provided
-        if (proxyConfigHolder != null && proxyConfigHolder.getProxyNetworkConfig() != null && proxyConfigHolder.getProxyCredentials() != null) {
+        if (proxyConfigHolder != null && proxyConfigHolder.getProxyNetworkConfig() != null) {
             Proxy proxy = getProxy(proxyConfigHolder);
-            options.setProxy(proxy);
-            LOGGER.log(Level.INFO, "Proxy configured: " + proxyConfigHolder.getProxyNetworkConfig().getHostname() + ":" + proxyConfigHolder.getProxyNetworkConfig().getPort());
+            options.setCapability(CapabilityType.PROXY, proxy);
+            //options.setProxy(proxy);
+            LOGGER.log(Level.INFO, String.format("Proxy configured: %s:%d", proxyConfigHolder.getProxyNetworkConfig().getHostname(), proxyConfigHolder.getProxyNetworkConfig().getPort()));
         }
 
         // Initialize ChromeDriver
@@ -58,7 +65,6 @@ public class WebDriverInitializer {
         String proxyAddressAndAuth = String.format("%s@%s", proxyAuth, proxyAddress);
 
         Proxy proxy = new Proxy();
-        proxy.setProxyType(Proxy.ProxyType.MANUAL);
         proxy.setHttpProxy(proxyAddressAndAuth);
         proxy.setSslProxy(proxyAddressAndAuth);
 
