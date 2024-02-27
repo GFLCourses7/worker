@@ -1,4 +1,4 @@
-package executor.service.utils;
+package executor.service.webdriver;
 
 import executor.service.config.proxy.ProxySourcesClientLoader;
 import executor.service.model.ProxyConfigHolder;
@@ -15,9 +15,10 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class WebDriverInitializer {
-    private static final Logger LOGGER = Logger.getLogger(WebDriverInitializer.class.getName());
+public class WebDriverInitializerImpl implements WebDriverInitializer {
+    private static final Logger LOGGER = Logger.getLogger(WebDriverInitializerImpl.class.getName());
 
+    @Override
     public WebDriver init() {
         LOGGER.log(Level.INFO, "Initializing WebDriver...");
 
@@ -25,7 +26,7 @@ public class WebDriverInitializer {
         ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
 
         // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializer.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
+        System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializerImpl.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
 
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();

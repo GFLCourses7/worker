@@ -1,4 +1,4 @@
-package executor.service.utils;
+package executor.service.webdriver;
 
 import executor.service.model.WebDriverConfig;
 
@@ -34,7 +34,6 @@ public class WebDriverConfigExecutor {
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error loading configuration", e);
         }
-
         return webDriverConfig;
     }
 }
