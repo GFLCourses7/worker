@@ -15,7 +15,10 @@ public class JsonConfigReader {
     public static <T> List<T> readFile(String configFile, Class<T> valueType) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(new File(configFile), objectMapper.getTypeFactory().constructCollectionType(List.class, valueType));
+            return objectMapper.readValue(
+                    JsonConfigReader.class.getClassLoader().getResource(configFile),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, valueType)
+            );
         } catch (IOException e) {
             String msg = "Error reading JSON file: " + configFile;
             logger.log(Level.SEVERE, msg, e);

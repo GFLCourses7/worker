@@ -9,9 +9,10 @@ import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.CapabilityType;
+
+import java.io.File;
+import java.io.IOException;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,8 +26,8 @@ public class WebDriverInitializer {
         ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
 
         // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializer.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
-
+        //System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializer.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
+        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "\\" + webDriverConfig.getWebDriverExecutable());
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();
 
@@ -35,16 +36,48 @@ public class WebDriverInitializer {
             options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
         }
 
+        // Create proxy file config initializer
+        ProxyFileConfigInitializer proxyFileConfigInitializer = new ProxyFileConfigInitializer();
+
         // Set proxy if provided
         if (proxyConfigHolder != null && proxyConfigHolder.getProxyNetworkConfig() != null) {
-            Proxy proxy = getProxy(proxyConfigHolder);
-            options.setCapability(CapabilityType.PROXY, proxy);
+            //Proxy proxy = getProxy(proxyConfigHolder);
+
+            // Alternative method to create proxy
+            // without credentials
+            //options.addArguments("--proxy-server=51.81.31.169:4485");
+
+            // Create zip file via provided
+            // proxy settings
+            File file = null;
+            try {
+                file = proxyFileConfigInitializer.initProxyConfigFile(
+                        proxyConfigHolder.getProxyNetworkConfig().getHostname(),
+                        proxyConfigHolder.getProxyNetworkConfig().getPort(),
+                        proxyConfigHolder.getProxyCredentials().getUsername(),
+                        proxyConfigHolder.getProxyCredentials().getPassword()
+                );
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // add extension containing
+            // all proxy configs via a zip file
+            // in proxy/temp/<counter>/
+            options.addExtensions(file);
+
             //options.setProxy(proxy);
+
             LOGGER.log(Level.INFO, String.format("Proxy configured: %s:%d", proxyConfigHolder.getProxyNetworkConfig().getHostname(), proxyConfigHolder.getProxyNetworkConfig().getPort()));
         }
 
         // Initialize ChromeDriver
         ChromeDriver driver = new ChromeDriver(options);
+
+        // Free space from hard-drive after
+        // chrome driver has been initialized
+        proxyFileConfigInitializer.clearDirectory();
 
         // Configure timeouts
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));

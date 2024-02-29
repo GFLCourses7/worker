@@ -1,0 +1,14 @@
+[
+  {
+    "hostname": "23.27.3.31",
+    "port": 50100
+  },
+  {
+    "hostname": "host2",
+    "port": 8088
+  },
+  {
+    "hostname": "host3",
+    "port": 8089
+  }
+]
