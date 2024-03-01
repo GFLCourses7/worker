@@ -5,13 +5,16 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
+import net.lightbody.bmp.BrowserMobProxyServer;
+import net.lightbody.bmp.client.ClientUtil;
+import net.lightbody.bmp.proxy.auth.AuthType;
 import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
+import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,7 +29,7 @@ public class WebDriverInitializerImpl implements WebDriverInitializer {
         ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
 
         // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", Objects.requireNonNull(WebDriverInitializerImpl.class.getClassLoader().getResource(webDriverConfig.getWebDriverExecutable())).getPath());
+        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
 
         // Configure Chrome options
         ChromeOptions options = new ChromeOptions();
@@ -40,7 +43,6 @@ public class WebDriverInitializerImpl implements WebDriverInitializer {
         if (proxyConfigHolder != null && proxyConfigHolder.getProxyNetworkConfig() != null) {
             Proxy proxy = getProxy(proxyConfigHolder);
             options.setCapability(CapabilityType.PROXY, proxy);
-            //options.setProxy(proxy);
             LOGGER.log(Level.INFO, String.format("Proxy configured: %s:%d", proxyConfigHolder.getProxyNetworkConfig().getHostname(), proxyConfigHolder.getProxyNetworkConfig().getPort()));
         }
 
@@ -62,14 +64,21 @@ public class WebDriverInitializerImpl implements WebDriverInitializer {
         ProxyCredentials proxyCredentials = proxyConfigHolder.getProxyCredentials();
 
         String proxyAddress = String.format("%s:%d", proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort());
-        String proxyAuth = String.format("%s:%s", proxyCredentials.getUsername(), proxyCredentials.getPassword());
-        String proxyAddressAndAuth = String.format("%s@%s", proxyAuth, proxyAddress);
 
-        Proxy proxy = new Proxy();
-        proxy.setHttpProxy(proxyAddressAndAuth);
-        proxy.setSslProxy(proxyAddressAndAuth);
+        if (proxyConfigHolder.getProxyCredentials()==null) {
+            Proxy proxy = new Proxy();
+            proxy.setHttpProxy(proxyAddress);
+            proxy.setSslProxy(proxyAddress);
+            return proxy;
+        }
 
-        LOGGER.log(Level.INFO, "Proxy configured successfully: " + proxyAddressAndAuth);
-        return proxy;
+        BrowserMobProxyServer proxy = new BrowserMobProxyServer();
+
+        proxy.setChainedProxy(new InetSocketAddress(proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort()));
+        proxy.chainedProxyAuthorization(proxyCredentials.getUsername(), proxyCredentials.getPassword(), AuthType.BASIC);
+        proxy.start(0);
+
+        LOGGER.log(Level.INFO, "Proxy configured successfully: " + proxyAddress);
+        return ClientUtil.createSeleniumProxy(proxy);
     }
 }

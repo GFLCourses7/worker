@@ -6,6 +6,8 @@ import executor.service.utils.JsonConfigReader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
+import org.openqa.selenium.WebDriver;
+
 import java.util.ArrayList;
 import java.util.List;
 import static org.mockito.Mockito.*;
@@ -16,8 +18,8 @@ public class WebDriverInitializerTest {
 
     @BeforeEach
     void setUp() {
-        fakeProxyNetworkConfig = new ProxyNetworkConfig("localhost", 8080);
-        fakeProxyCredentials = new ProxyCredentials("login", "password");
+        fakeProxyNetworkConfig = new ProxyNetworkConfig("23.27.3.31", 50100);
+        fakeProxyCredentials = new ProxyCredentials("denyslviv2013", "REtsLkZs2I");
     }
 
     @Test
@@ -34,7 +36,16 @@ public class WebDriverInitializerTest {
                     .thenReturn(fakeProxyCredentialsList);
 
             WebDriverInitializerImpl webDriverInitializer = new WebDriverInitializerImpl();
-            webDriverInitializer.init().close();
+
+            WebDriver init = webDriverInitializer.init();
+
+            init.get("https://whatismyipaddress.com/");
+
+            Thread.sleep(10000); // 10s
+
+            init.close();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 }
