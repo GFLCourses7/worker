@@ -3,32 +3,24 @@ package executor.service.utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import executor.service.exception.ConfigFileNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mockStatic;
 
 public class JsonConfigReaderTest {
 
     @Test
-    void testReadFile_Success() {
-        List<String> fakeResult = new ArrayList<>();
-        fakeResult.add("fake test");
+    void testReadFile_Success() throws IOException {
+        String json = "[{\"name\":\"John\"}]";
+        File tempFile = createTempJsonFile(json);
 
-        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), any()))
-                    .thenReturn(fakeResult);
+        List<Person> persons = JsonConfigReader.readFile(tempFile.getAbsolutePath(), Person.class);
 
-            assertEquals(JsonConfigReader.readFile("config.json", String.class), fakeResult);
-        }
+        assertEquals("John", persons.get(0).getName());
     }
 
     @Test
@@ -40,16 +32,11 @@ public class JsonConfigReaderTest {
 
         assertEquals("John", persons.get(0).getName());
     }
-    static class Person {
-        private String name;
-        public Person() {
-        }
-        public String getName() {
-            return name;
-        }
-        public void setName(String name) {
-            this.name = name;
-        }
+
+    @Test
+    void testReadFile_IOException() {
+        assertThrows(ConfigFileNotFoundException.class,
+                () -> JsonConfigReader.readFile("fakeFile", Person.class));
     }
 
     // Helper method to create a temporary JSON file
@@ -60,15 +47,24 @@ public class JsonConfigReaderTest {
         objectMapper.writeValue(tempFile, objectMapper.readTree(json));
         return tempFile;
     }
-    @Test
-    void testReadFile_IOException() {
 
-        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), any()))
-                    .thenThrow(new ConfigFileNotFoundException());
+    private static class Person {
+        private String name;
 
-            assertThrows(ConfigFileNotFoundException.class, () ->
-                    JsonConfigReader.readFile("config.json", String.class));
+        public Person() {
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
+
 }
+
+
+
+
