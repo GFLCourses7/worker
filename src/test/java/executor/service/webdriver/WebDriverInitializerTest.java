@@ -18,8 +18,8 @@ public class WebDriverInitializerTest {
 
     @BeforeEach
     void setUp() {
-        fakeProxyNetworkConfig = new ProxyNetworkConfig("23.27.3.31", 50100);
-        fakeProxyCredentials = new ProxyCredentials("denyslviv2013", "REtsLkZs2I");
+        fakeProxyNetworkConfig = new ProxyNetworkConfig("35.185.196.38", 3128);
+        fakeProxyCredentials = null;
     }
 
     @Test
@@ -39,12 +39,12 @@ public class WebDriverInitializerTest {
 
             WebDriver init = webDriverInitializer.init();
 
-            init.get("https://whatismyipaddress.com/");
+            init.get("https://2ip.io/");
 
             Thread.sleep(10000); // 10s
 
             init.close();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

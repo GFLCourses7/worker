@@ -65,20 +65,16 @@ public class WebDriverInitializerImpl implements WebDriverInitializer {
 
         String proxyAddress = String.format("%s:%d", proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort());
 
-        if (proxyConfigHolder.getProxyCredentials()==null) {
-            Proxy proxy = new Proxy();
-            proxy.setHttpProxy(proxyAddress);
-            proxy.setSslProxy(proxyAddress);
-            return proxy;
-        }
-
         BrowserMobProxyServer proxy = new BrowserMobProxyServer();
 
         proxy.setChainedProxy(new InetSocketAddress(proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort()));
-        proxy.chainedProxyAuthorization(proxyCredentials.getUsername(), proxyCredentials.getPassword(), AuthType.BASIC);
+
+        if (proxyConfigHolder.getProxyCredentials()!=null)
+            proxy.chainedProxyAuthorization(proxyCredentials.getUsername(), proxyCredentials.getPassword(), AuthType.BASIC);
+
         proxy.start(0);
 
-        LOGGER.log(Level.INFO, "Proxy configured successfully: " + proxyAddress);
+        LOGGER.log(Level.INFO, "Proxy configured successfully");
         return ClientUtil.createSeleniumProxy(proxy);
     }
 }
