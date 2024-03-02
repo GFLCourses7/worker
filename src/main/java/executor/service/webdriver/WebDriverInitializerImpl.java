@@ -63,8 +63,6 @@ public class WebDriverInitializerImpl implements WebDriverInitializer {
         ProxyNetworkConfig proxyNetworkConfig = proxyConfigHolder.getProxyNetworkConfig();
         ProxyCredentials proxyCredentials = proxyConfigHolder.getProxyCredentials();
 
-        String proxyAddress = String.format("%s:%d", proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort());
-
         BrowserMobProxyServer proxy = new BrowserMobProxyServer();
 
         proxy.setChainedProxy(new InetSocketAddress(proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort()));
