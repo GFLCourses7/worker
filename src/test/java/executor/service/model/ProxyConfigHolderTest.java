@@ -69,8 +69,8 @@ public class ProxyConfigHolderTest {
     @Test
     public void testDefaultConstructor() {
         ProxyConfigHolder holder = new ProxyConfigHolder();
-        assertNull(holder.getProxyNetworkConfig());
-        assertNull(holder.getProxyCredentials());
+        assertNotNull(holder.getProxyNetworkConfig());
+        assertNotNull(holder.getProxyCredentials());
     }
 
     @Test

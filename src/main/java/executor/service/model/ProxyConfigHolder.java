@@ -8,6 +8,8 @@ public class ProxyConfigHolder {
 
 
     public ProxyConfigHolder() {
+        proxyNetworkConfig = new ProxyNetworkConfig();
+        proxyCredentials = new ProxyCredentials();
     }
 
     public ProxyConfigHolder(ProxyNetworkConfig proxyNetworkConfig, ProxyCredentials proxyCredentials) {
