@@ -18,8 +18,8 @@ import java.time.Duration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class WebDriverInitializerImpl implements WebDriverInitializer {
-    private static final Logger LOGGER = Logger.getLogger(WebDriverInitializerImpl.class.getName());
+public class ChromeDriverInitializer implements WebDriverInitializer {
+    private static final Logger LOGGER = Logger.getLogger(ChromeDriverInitializer.class.getName());
 
     @Override
     public WebDriver init() {

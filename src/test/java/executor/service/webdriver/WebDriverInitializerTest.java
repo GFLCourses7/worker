@@ -35,7 +35,7 @@ public class WebDriverInitializerTest {
             utilities.when(() -> JsonConfigReader.readFile(eq("ProxyCredentials.json"), any()))
                     .thenReturn(fakeProxyCredentialsList);
 
-            WebDriverInitializerImpl webDriverInitializer = new WebDriverInitializerImpl();
+            ChromeDriverInitializer webDriverInitializer = new ChromeDriverInitializer();
 
             WebDriver init = webDriverInitializer.init();
 
