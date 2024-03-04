@@ -5,8 +5,10 @@ import executor.service.utils.JsonConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
@@ -20,7 +22,18 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     @Override
     public void execute() {
-        scenarios = JsonConfigReader.readFile(SCENARIOS_JSON, Scenario.class);
+
+        // Look for scenarios.json inside /resources folder
+        String path = null;
+        try {
+            path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
+        } catch (URISyntaxException e) {
+            logger.error(e);
+        }
+
+        scenarios = JsonConfigReader.readFile(
+                path, Scenario.class
+        );
     }
 
     public Scenario getScenario() {
