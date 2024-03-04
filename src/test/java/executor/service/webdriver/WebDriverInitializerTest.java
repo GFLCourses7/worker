@@ -1,5 +1,6 @@
 package executor.service.webdriver;
 
+import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.utils.JsonConfigReader;
@@ -15,25 +16,23 @@ import static org.mockito.Mockito.*;
 public class WebDriverInitializerTest {
     private ProxyNetworkConfig fakeProxyNetworkConfig;
     private ProxyCredentials fakeProxyCredentials;
+    private ProxyConfigHolder fakeProxyConfigHolder;
 
     @BeforeEach
     void setUp() {
-        fakeProxyNetworkConfig = new ProxyNetworkConfig("35.185.196.38", 3128);
-        fakeProxyCredentials = null;
+        fakeProxyNetworkConfig = new ProxyNetworkConfig("23.27.3.31", 50100);
+        fakeProxyCredentials = new ProxyCredentials("denyslviv2013", "REtsLkZs2I");
+        fakeProxyConfigHolder = new ProxyConfigHolder(fakeProxyNetworkConfig, fakeProxyCredentials);
     }
 
     @Test
     public void testSuccessInit() {
-        List<ProxyNetworkConfig> fakeProxyNetworkConfigList = new ArrayList<>();
-        fakeProxyNetworkConfigList.add(fakeProxyNetworkConfig);
-        List<ProxyCredentials> fakeProxyCredentialsList = new ArrayList<>();
-        fakeProxyCredentialsList.add(fakeProxyCredentials);
+        List<ProxyConfigHolder> fakeProxyConfigHolderList = new ArrayList<>();
+        fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(eq("ProxyNetwork.json"), any()))
-                    .thenReturn(fakeProxyNetworkConfigList);
-            utilities.when(() -> JsonConfigReader.readFile(eq("ProxyCredentials.json"), any()))
-                    .thenReturn(fakeProxyCredentialsList);
+            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+                    .thenReturn(fakeProxyConfigHolderList);
 
             ChromeDriverInitializer webDriverInitializer = new ChromeDriverInitializer();
 
