@@ -4,13 +4,15 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.utils.JsonConfigReader;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.openqa.selenium.WebDriver;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+
 import static org.mockito.Mockito.*;
 
 public class WebDriverInitializerTest {
@@ -37,12 +39,24 @@ public class WebDriverInitializerTest {
             ChromeDriverInitializer webDriverInitializer = new ChromeDriverInitializer();
 
             WebDriver init = webDriverInitializer.init();
-
             init.get("https://2ip.io/");
+            Thread.sleep(5000); // 5s
+            init.quit();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Test
+    public void testErrorInit() {
+        List<ProxyConfigHolder> fakeProxyConfigHolderList = new ArrayList<>();
 
-            Thread.sleep(10000); // 10s
+        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
+            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+                    .thenReturn(fakeProxyConfigHolderList);
 
-            init.close();
+            ChromeDriverInitializer webDriverInitializer = new ChromeDriverInitializer();
+            Assertions.assertThrows(NoSuchElementException.class, webDriverInitializer::init);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
