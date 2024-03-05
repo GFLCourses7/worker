@@ -13,7 +13,6 @@ import java.util.Objects;
 public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
     private static final String SCENARIOS_JSON = "scenarios.json";
-
     private List<Scenario> scenarios;
 
     public ScenarioSourceListenerImpl() {
@@ -43,4 +42,9 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         logger.error("Trying to get scenario from empty scenario list.");
         throw new NoSuchElementException("Scenario list is empty.");
     }
+
+    public List<Scenario> getScenarios() {
+        return scenarios;
+    }
+
 }

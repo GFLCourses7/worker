@@ -1,12 +1,14 @@
 package executor.service;
 
-/**
- * Hello world!
- *
- */
+import executor.service.executionService.ParallelFlowExecutorService;
+import executor.service.factory.AbstractFactory;
+import executor.service.factory.DIFactory;
+
 public class App
 {
     public static void main( String[] args ) {
-        System.out.println( "Hello World!" );
+        AbstractFactory factory = new DIFactory();
+        ParallelFlowExecutorService parallelFlowExecutorService = factory.create(ParallelFlowExecutorService.class);
+        parallelFlowExecutorService.startThreads();
     }
 }
