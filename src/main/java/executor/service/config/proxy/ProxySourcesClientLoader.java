@@ -26,7 +26,8 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
     public ProxyConfigHolder getProxy() {
         if (!proxies.isEmpty()) {
             ProxyConfigHolder proxy = proxies.remove(0);
-            LOGGER.info(String.format("Returning %s proxy from proxies list.", proxy.getProxyNetworkConfig().getHostname()));
+            if (proxy.getProxyNetworkConfig() != null)
+                LOGGER.info(String.format("Returning %s proxy from proxies list.", proxy.getProxyNetworkConfig().getHostname()));
             return proxy;
         }
         LOGGER.error("Trying to get proxy, while all proxies were used.");
