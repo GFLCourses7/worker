@@ -4,83 +4,73 @@ import executor.service.executor.ExecutionService;
 import executor.service.model.ThreadPoolConfig;
 import executor.service.scenario.ScenarioExecutor;
 import executor.service.scenario.ScenarioSourceListenerImpl;
+import executor.service.utils.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
-import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.FileBasedConfiguration;
-import org.apache.commons.configuration2.PropertiesConfiguration;
-import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
-import org.apache.commons.configuration2.builder.fluent.Parameters;
-import org.apache.commons.configuration2.ex.ConfigurationException;
+
 import org.openqa.selenium.WebDriver;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ParallelFlowExecutorService {
 
-    private ThreadPoolConfig threadPoolConfig;
+    private final ThreadPoolConfig threadPoolConfig;
     private ThreadPoolExecutor threadPoolExecutor;
     private final ScenarioSourceListenerImpl scenarioSourceListener;
     private final ExecutionService executionService;
     private final WebDriver webDriver;
     private final ScenarioExecutor scenarioExecutor;
+    private static final int MAX_POOL_SIZE = 10;
     private static final Logger LOGGER = LogManager.getLogger(ParallelFlowExecutorService.class.getName());
 
     public ParallelFlowExecutorService(ScenarioSourceListenerImpl scenarioSourceListener,
                                        ExecutionService executionService,
                                        WebDriverInitializer webDriverInitializer,
                                        ScenarioExecutor scenarioExecutor
-                                       ) {
+    ) {
         this.scenarioSourceListener = scenarioSourceListener;
         this.executionService = executionService;
         this.webDriver = webDriverInitializer.init();
         this.scenarioExecutor = scenarioExecutor;
-        this.threadPoolConfig = init();
+        this.threadPoolConfig = PropertiesConfigHolder.initThreadConfig();
+        this.threadPoolExecutor = initExecutor();
     }
-    public ThreadPoolConfig init() {
-        LOGGER.info("Get thread pool properties from file: " + "executorService.properties");
-        Parameters parameters = new Parameters();
-        FileBasedConfigurationBuilder<FileBasedConfiguration> builder =
-                new FileBasedConfigurationBuilder<FileBasedConfiguration>(PropertiesConfiguration.class)
-                        .configure(parameters.properties()
-                                .setFileName("executorService.properties"));
-        try {
-            Configuration configuration = builder.getConfiguration();
-            return threadPoolConfig =
-                    new ThreadPoolConfig(configuration.getInt("executorservice.common.threadsCount"),
-                            configuration.getLong("executorservice.common.pageLoadTimeout"));
-        } catch (ConfigurationException configException) {
-            String message = "Configuration fail from file: " + "executorService.properties";
-            LOGGER.error(message);
-            configException.getStackTrace();
-        }
-        return threadPoolConfig;
-    }
-    public void startThreads() {
+
+    ThreadPoolExecutor initExecutor() {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();
-        threadPoolExecutor = new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(),
-                10,
+        ThreadPoolExecutor newThreadPoolExecutor = new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(),
+                MAX_POOL_SIZE,
                 threadPoolConfig.getKeepAliveTime(),
                 TimeUnit.MILLISECONDS,
                 blockingQueue);
+
         LOGGER.info("Create new ThreadPoolExecutor with parameters: " +
                 "CorePoolSize - " + threadPoolConfig.getCorePoolSize() +
-                " MaxPoolSize - " + 10 +
+                " MaxPoolSize - " + MAX_POOL_SIZE +
                 " KeepAliveTime - " + threadPoolConfig.getKeepAliveTime() +
                 " milliseconds");
-        while(!scenarioSourceListener.getScenarios().isEmpty()){
+        return newThreadPoolExecutor;
+    }
 
+    public void startThreads() {
+
+        int scenarioCount = scenarioSourceListener.getScenarios().size();
+
+        for (int i = 0; i < scenarioCount; i++) {
             LOGGER.info("Start executing scenarios in threads");
             threadPoolExecutor.execute(() -> executionService.execute(webDriver, scenarioSourceListener, scenarioExecutor));
         }
-        LOGGER.info("Shutdown");
+        LOGGER.info("Shutdown ThreadPoolExecutor");
         threadPoolExecutor.shutdown();
     }
-
     public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
         this.threadPoolExecutor = threadPoolExecutor;
+    }
+    public ThreadPoolExecutor getThreadPoolExecutor() {
+        return threadPoolExecutor;
     }
 }
