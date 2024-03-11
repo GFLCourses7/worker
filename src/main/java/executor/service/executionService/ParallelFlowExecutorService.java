@@ -54,9 +54,7 @@ public class ParallelFlowExecutorService {
     }
 
     public void startThreads() {
-
         int scenarioCount = scenarioSourceListener.getScenarios().size();
-
         for (int i = 0; i < scenarioCount; i++) {
             LOGGER.info("Start executing scenarios in threads");
             threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
