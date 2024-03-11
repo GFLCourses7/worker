@@ -1,5 +1,7 @@
 package executor.service.factory;
 
+import executor.service.executionService.ParallelFlowExecutorService;
+import executor.service.executor.ExecutionService;
 import executor.service.scenario.ScenarioExecutor;
 import executor.service.scenario.ScenarioExecutorService;
 import executor.service.scenario.ScenarioSourceListener;
@@ -30,8 +32,15 @@ public class DIFactory implements AbstractFactory {
         if (ScenarioSourceListener.class.isAssignableFrom(clazz))
             return getScenarioSourceListener(clazz);
 
+        if (ExecutionService.class.isAssignableFrom(clazz))
+            return createExecutionService(clazz);
+
+        if (ParallelFlowExecutorService.class.isAssignableFrom(clazz))
+            return getParallelFlowExecutorService(clazz);
+
         return null;
     }
+
 
     private <T> T getScenarioExecutor() {
 
@@ -46,6 +55,26 @@ public class DIFactory implements AbstractFactory {
     private <T> T getScenarioSourceListener(Class<T> clazz) {
 
         return (T) SINGLETON.initWithinContext(ScenarioSourceListenerImpl::new, context, clazz);
+    }
+
+    private <T> T createExecutionService(Class<T> clazz) {
+
+        return (T) SINGLETON.initWithinContext(ExecutionService::new, context, clazz);
+    }
+
+    private <T> T getParallelFlowExecutorService(Class<T> clazz) {
+
+        ScenarioSourceListener scenarioSourceListener = create(ScenarioSourceListener.class);
+        ExecutionService executorService = create(ExecutionService.class);
+        WebDriverInitializer webDriverInitializer = create(WebDriverInitializer.class);
+        ScenarioExecutor scenarioExecutor = create(ScenarioExecutor.class);
+
+        return (T) SINGLETON.initWithinContext(() -> new ParallelFlowExecutorService(
+                (ScenarioSourceListenerImpl) scenarioSourceListener,
+                executorService,
+                webDriverInitializer,
+                scenarioExecutor
+        ), context, clazz);
     }
 
 }

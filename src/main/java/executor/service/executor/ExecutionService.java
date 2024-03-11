@@ -11,8 +11,11 @@ public class ExecutionService {
     private static final Logger logger = Logger.getLogger(ExecutionService.class.getName());
 
     public void execute(WebDriver driver, ScenarioSourceListenerImpl sourceListener, ScenarioExecutor scenarioExecutor) {
-        Scenario scenario = sourceListener.getScenario();
+
         try {
+
+            Scenario scenario = sourceListener.getScenario();
+
             logger.info("Starting execution for scenario: " + scenario.getName());
 
             logger.info("Navigating to site: " + scenario.getSite());
