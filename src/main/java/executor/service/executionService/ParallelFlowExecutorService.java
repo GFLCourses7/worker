@@ -7,8 +7,6 @@ import executor.service.scenario.ScenarioSourceListenerImpl;
 import executor.service.utils.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
 
-import org.openqa.selenium.WebDriver;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -22,9 +20,8 @@ public class ParallelFlowExecutorService {
     private ThreadPoolExecutor threadPoolExecutor;
     private final ScenarioSourceListenerImpl scenarioSourceListener;
     private final ExecutionService executionService;
-    private final WebDriver webDriver;
+    private final WebDriverInitializer webDriverInitializer;
     private final ScenarioExecutor scenarioExecutor;
-    private static final int MAX_POOL_SIZE = 10;
     private static final Logger LOGGER = LogManager.getLogger(ParallelFlowExecutorService.class.getName());
 
     public ParallelFlowExecutorService(ScenarioSourceListenerImpl scenarioSourceListener,
@@ -34,7 +31,7 @@ public class ParallelFlowExecutorService {
     ) {
         this.scenarioSourceListener = scenarioSourceListener;
         this.executionService = executionService;
-        this.webDriver = webDriverInitializer.init();
+        this.webDriverInitializer = webDriverInitializer;
         this.scenarioExecutor = scenarioExecutor;
         this.threadPoolConfig = PropertiesConfigHolder.initThreadConfig();
         this.threadPoolExecutor = initExecutor();
@@ -43,14 +40,14 @@ public class ParallelFlowExecutorService {
     ThreadPoolExecutor initExecutor() {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();
         ThreadPoolExecutor newThreadPoolExecutor = new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(),
-                MAX_POOL_SIZE,
+                Integer.MAX_VALUE,
                 threadPoolConfig.getKeepAliveTime(),
                 TimeUnit.MILLISECONDS,
                 blockingQueue);
 
         LOGGER.info("Create new ThreadPoolExecutor with parameters: " +
                 "CorePoolSize - " + threadPoolConfig.getCorePoolSize() +
-                " MaxPoolSize - " + MAX_POOL_SIZE +
+                " MaxPoolSize - " + Integer.MAX_VALUE +
                 " KeepAliveTime - " + threadPoolConfig.getKeepAliveTime() +
                 " milliseconds");
         return newThreadPoolExecutor;
@@ -62,14 +59,18 @@ public class ParallelFlowExecutorService {
 
         for (int i = 0; i < scenarioCount; i++) {
             LOGGER.info("Start executing scenarios in threads");
-            threadPoolExecutor.execute(() -> executionService.execute(webDriver, scenarioSourceListener, scenarioExecutor));
+            threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
+                    scenarioSourceListener,
+                    scenarioExecutor));
         }
         LOGGER.info("Shutdown ThreadPoolExecutor");
         threadPoolExecutor.shutdown();
     }
+
     public void setThreadPoolExecutor(ThreadPoolExecutor threadPoolExecutor) {
         this.threadPoolExecutor = threadPoolExecutor;
     }
+
     public ThreadPoolExecutor getThreadPoolExecutor() {
         return threadPoolExecutor;
     }
