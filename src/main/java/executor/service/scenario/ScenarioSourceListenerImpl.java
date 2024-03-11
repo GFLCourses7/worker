@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -13,7 +14,6 @@ import java.util.Objects;
 public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
     private static final String SCENARIOS_JSON = "scenarios.json";
-
     private List<Scenario> scenarios;
 
     public ScenarioSourceListenerImpl() {
@@ -31,8 +31,8 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
             logger.error(e);
         }
 
-        scenarios = JsonConfigReader.readFile(
-                path, Scenario.class
+        scenarios = new ArrayList<>(JsonConfigReader.readFile(
+                path, Scenario.class)
         );
     }
 
@@ -43,4 +43,13 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         logger.error("Trying to get scenario from empty scenario list.");
         throw new NoSuchElementException("Scenario list is empty.");
     }
+
+    public List<Scenario> getScenarios() {
+        return scenarios;
+    }
+
+    public void setScenarios(List<Scenario> scenarios) {
+        this.scenarios = scenarios;
+    }
+
 }

@@ -5,6 +5,7 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
+import executor.service.utils.PropertiesConfigHolder;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.proxy.auth.AuthType;
@@ -25,7 +26,7 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
     public WebDriver init() {
         LOGGER.log(Level.INFO, "Initializing WebDriver...");
 
-        WebDriverConfig webDriverConfig = WebDriverConfigExecutor.loadConfigFromFile();
+        WebDriverConfig webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
         ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
 
         // Set WebDriver executable
