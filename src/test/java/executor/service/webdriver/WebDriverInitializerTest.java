@@ -3,7 +3,7 @@ package executor.service.webdriver;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
-import executor.service.utils.JsonConfigReader;
+import executor.service.config.JsonConfigReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

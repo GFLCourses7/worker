@@ -1,7 +1,7 @@
 package executor.service.config.proxy;
 
 import executor.service.model.ProxyConfigHolder;
-import executor.service.utils.JsonConfigReader;
+import executor.service.config.JsonConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

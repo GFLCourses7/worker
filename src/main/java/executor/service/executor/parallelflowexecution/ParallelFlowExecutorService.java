@@ -1,10 +1,12 @@
-package executor.service.executionService;
+package executor.service.executor.parallelflowexecution;
 
-import executor.service.executor.ExecutionService;
+import executor.service.executor.executionservice.ExecutionServiceImpl;
+import executor.service.listener.ScenarioSourceListener;
+import executor.service.model.Scenario;
 import executor.service.model.ThreadPoolConfig;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.scenario.ScenarioSourceListenerImpl;
-import executor.service.utils.PropertiesConfigHolder;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.listener.ScenarioSourceListenerImpl;
+import executor.service.config.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,14 +20,14 @@ public class ParallelFlowExecutorService {
 
     private final ThreadPoolConfig threadPoolConfig;
     private ThreadPoolExecutor threadPoolExecutor;
-    private final ScenarioSourceListenerImpl scenarioSourceListener;
-    private final ExecutionService executionService;
+    private final ScenarioSourceListener scenarioSourceListener;
+    private final ExecutionServiceImpl executionService;
     private final WebDriverInitializer webDriverInitializer;
     private final ScenarioExecutor scenarioExecutor;
     private static final Logger LOGGER = LogManager.getLogger(ParallelFlowExecutorService.class.getName());
 
-    public ParallelFlowExecutorService(ScenarioSourceListenerImpl scenarioSourceListener,
-                                       ExecutionService executionService,
+    public ParallelFlowExecutorService(ScenarioSourceListener scenarioSourceListener,
+                                       ExecutionServiceImpl executionService,
                                        WebDriverInitializer webDriverInitializer,
                                        ScenarioExecutor scenarioExecutor
     ) {
@@ -33,35 +35,42 @@ public class ParallelFlowExecutorService {
         this.executionService = executionService;
         this.webDriverInitializer = webDriverInitializer;
         this.scenarioExecutor = scenarioExecutor;
-        this.threadPoolConfig = PropertiesConfigHolder.initThreadConfig();
+        this.threadPoolConfig = PropertiesConfigHolder.loadThreadConfigFromFile();
         this.threadPoolExecutor = initExecutor();
     }
 
     ThreadPoolExecutor initExecutor() {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();
         ThreadPoolExecutor newThreadPoolExecutor = new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(),
-                Integer.MAX_VALUE,
+                PropertiesConfigHolder.loadMaxPoolSizeFromFile(),
                 threadPoolConfig.getKeepAliveTime(),
                 TimeUnit.MILLISECONDS,
                 blockingQueue);
 
         LOGGER.info("Create new ThreadPoolExecutor with parameters: " +
                 "CorePoolSize - " + threadPoolConfig.getCorePoolSize() +
-                " MaxPoolSize - " + Integer.MAX_VALUE +
+                " MaxPoolSize - " + PropertiesConfigHolder.loadMaxPoolSizeFromFile() +
                 " KeepAliveTime - " + threadPoolConfig.getKeepAliveTime() +
                 " milliseconds");
         return newThreadPoolExecutor;
     }
 
     public void startThreads() {
-        int scenarioCount = scenarioSourceListener.getScenarios().size();
-        for (int i = 0; i < scenarioCount; i++) {
-            LOGGER.info("Start executing scenarios in threads");
-            threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
-                    scenarioSourceListener,
-                    scenarioExecutor));
+
+        LinkedBlockingQueue<Scenario> scenarioQueue = ((ScenarioSourceListenerImpl) scenarioSourceListener).getScenarios();
+
+        if(scenarioQueue==null || scenarioQueue.isEmpty() ){
+            LOGGER.warn("Scenario list is empty or null. No threads will be started.");
+            return;
         }
-        LOGGER.info("Shutdown ThreadPoolExecutor");
+        LOGGER.info("Start executing scenarios in threads ");
+        for (Scenario scenario: scenarioQueue) {
+            if(scenario!=null){
+            threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
+                    (ScenarioSourceListenerImpl) scenarioSourceListener,
+                    scenarioExecutor));}
+        }
+        LOGGER.info("shutdown ThreadPoolExecutor");
         threadPoolExecutor.shutdown();
     }
 
