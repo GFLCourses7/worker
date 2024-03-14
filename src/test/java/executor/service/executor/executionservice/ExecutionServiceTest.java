@@ -1,8 +1,9 @@
-package executor.service.executor;
+package executor.service.executor.executionservice;
 
+import executor.service.executor.executionservice.ExecutionServiceImpl;
 import executor.service.model.Scenario;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.scenario.ScenarioSourceListenerImpl;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.listener.ScenarioSourceListenerImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -30,7 +31,7 @@ public class ExecutionServiceTest {
         scenario.setSite("http://example.com");
         when(mockedSourceListener.getScenario()).thenReturn(scenario);
 
-        ExecutionService executionService = new ExecutionService();
+        ExecutionServiceImpl executionService = new ExecutionServiceImpl();
 
         executionService.execute(mockedDriver, mockedSourceListener, mockedScenarioExecutor);
 
@@ -42,7 +43,7 @@ public class ExecutionServiceTest {
     @Test
     public void testMandatoryQuitAfterException() {
         when(mockedSourceListener.getScenario()).thenReturn(null);
-        ExecutionService executionService = new ExecutionService();
+        ExecutionServiceImpl executionService = new ExecutionServiceImpl();
         executionService.execute(mockedDriver, mockedSourceListener, mockedScenarioExecutor);
         try {
             executionService.execute(mockedDriver, mockedSourceListener, mockedScenarioExecutor);

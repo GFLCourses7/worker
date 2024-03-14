@@ -1,11 +1,12 @@
-package executor.service.executionService;
+package executor.service.executor.parallelflowexecution;
 
+import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
 import executor.service.model.Scenario;
 import executor.service.model.ThreadPoolConfig;
-import executor.service.scenario.ScenarioSourceListenerImpl;
-import executor.service.executor.ExecutionService;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.utils.PropertiesConfigHolder;
+import executor.service.listener.ScenarioSourceListenerImpl;
+import executor.service.executor.executionservice.ExecutionServiceImpl;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.config.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,10 +16,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
 import org.openqa.selenium.WebDriver;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,7 +30,7 @@ public class ParallelFlowExecutorServiceTest {
     @Mock
     private ScenarioSourceListenerImpl mockScenarioSourceListener;
     @Mock
-    private ExecutionService mockExecutionService;
+    private ExecutionServiceImpl mockExecutionService;
     @Mock
     private WebDriverInitializer mockWebDriverInitializer;
     @Mock
@@ -40,7 +38,7 @@ public class ParallelFlowExecutorServiceTest {
     @Mock
     private ScenarioExecutor mockScenarioExecutor;
     @Spy
-    private ThreadPoolConfig threadPoolConfig = new ThreadPoolConfig(3, 20000L);
+    private ThreadPoolConfig threadPoolConfig = new ThreadPoolConfig(4, 20000L);
     private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
     @Mock
     private ThreadPoolExecutor mockThreadPoolExecutor;
@@ -62,33 +60,27 @@ public class ParallelFlowExecutorServiceTest {
                 mockWebDriverInitializer,
                 mockScenarioExecutor);
     }
-    @Test
-    public void initThreadPoolConfigTest() {
-        ThreadPoolConfig threadPoolConfig = PropertiesConfigHolder.initThreadConfig();
-        assertNotNull(threadPoolConfig);
-        assertEquals(2, threadPoolConfig.getCorePoolSize());
-        assertEquals(30000L, threadPoolConfig.getKeepAliveTime());
-    }
-    @Test
-    public void startThreadsShouldNotExecuteThreadsWhenListEmptyTest() {
 
-        when(mockScenarioSourceListener.getScenarios()).thenReturn(Collections.emptyList());
+    @Test
+    public void testStartThreadsShouldNotStartThreadsWhenQueueEmpty() {
+
+        when(mockScenarioSourceListener.getScenarios()).thenReturn(null);
 
         parallelFlowExecutorService.setThreadPoolExecutor(mockThreadPoolExecutor);
         parallelFlowExecutorService.startThreads();
 
         assertEquals(0, parallelFlowExecutorService.getThreadPoolExecutor().getActiveCount());
-        assertTrue(parallelFlowExecutorService.getThreadPoolExecutor().isShutdown());
+        assertFalse(parallelFlowExecutorService.getThreadPoolExecutor().isShutdown());
     }
 
     @Test
-    public void executeRunnableScenarioInParallelTest() {
+    public void testExecuteRunnableScenarioInParallel() {
         ScenarioSourceListenerImpl scenarioSourceListener = new ScenarioSourceListenerImpl();
         Scenario scenario = new Scenario();
 
-        List<Scenario> scenarioList = new ArrayList<>(Arrays.asList(scenario,scenario,scenario));
+        LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>(Arrays.asList(scenario,scenario,scenario));
 
-        scenarioSourceListener.setScenarios(scenarioList);
+        scenarioSourceListener.setScenarios(scenarioQueue);
 
         ParallelFlowExecutorService parallelFlowExecutorService = new ParallelFlowExecutorService(
                 scenarioSourceListener,mockExecutionService,

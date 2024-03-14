@@ -1,13 +1,15 @@
-package executor.service.factory;
+package executor.service.factory.difactory;
 
-import executor.service.executionService.ParallelFlowExecutorService;
-import executor.service.executor.ExecutionService;
+import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
+import executor.service.executor.executionservice.ExecutionServiceImpl;
+import executor.service.factory.difactory.AbstractFactory;
+import executor.service.factory.difactory.DIFactory;
 import executor.service.model.Scenario;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.scenario.ScenarioExecutorService;
-import executor.service.scenario.ScenarioSourceListener;
-import executor.service.scenario.ScenarioSourceListenerImpl;
-import executor.service.utils.JsonConfigReader;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.executor.scenarioexecutor.ScenarioExecutorService;
+import executor.service.listener.ScenarioSourceListener;
+import executor.service.listener.ScenarioSourceListenerImpl;
+import executor.service.config.JsonConfigReader;
 import executor.service.webdriver.ChromeDriverInitializer;
 import executor.service.webdriver.WebDriverInitializer;
 import org.junit.jupiter.api.*;
@@ -195,9 +197,9 @@ public class DIFactoryTest {
 
         AbstractFactory abstractFactory = new DIFactory();
 
-        ExecutionService executionService = abstractFactory.create(ExecutionService.class);
+        ExecutionServiceImpl executionService = abstractFactory.create(ExecutionServiceImpl.class);
 
-        Class<?> expected = ExecutionService.class;
+        Class<?> expected = ExecutionServiceImpl.class;
         Class<?> actual = executionService.getClass();
 
         assertEquals(expected, actual);
@@ -208,8 +210,8 @@ public class DIFactoryTest {
 
         AbstractFactory abstractFactory = new DIFactory();
 
-        ExecutionService expected = abstractFactory.create(ExecutionService.class);
-        ExecutionService actual = abstractFactory.create(ExecutionService.class);
+        ExecutionServiceImpl expected = abstractFactory.create(ExecutionServiceImpl.class);
+        ExecutionServiceImpl actual = abstractFactory.create(ExecutionServiceImpl.class);
 
         assertSame(expected, actual);
     }

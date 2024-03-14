@@ -5,7 +5,7 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
-import executor.service.utils.PropertiesConfigHolder;
+import executor.service.config.PropertiesConfigHolder;
 import net.lightbody.bmp.BrowserMobProxyServer;
 import net.lightbody.bmp.client.ClientUtil;
 import net.lightbody.bmp.proxy.auth.AuthType;

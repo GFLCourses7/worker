@@ -1,8 +1,8 @@
 package executor.service;
 
-import executor.service.executionService.ParallelFlowExecutorService;
-import executor.service.factory.AbstractFactory;
-import executor.service.factory.DIFactory;
+import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
+import executor.service.factory.difactory.AbstractFactory;
+import executor.service.factory.difactory.DIFactory;
 
 public class App
 {

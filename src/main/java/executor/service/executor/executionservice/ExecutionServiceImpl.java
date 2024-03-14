@@ -1,15 +1,17 @@
-package executor.service.executor;
+package executor.service.executor.executionservice;
 
 import executor.service.model.Scenario;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.scenario.ScenarioSourceListenerImpl;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.listener.ScenarioSourceListenerImpl;
 import org.openqa.selenium.WebDriver;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-public class ExecutionService {
-    private static final Logger logger = Logger.getLogger(ExecutionService.class.getName());
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
+public class ExecutionServiceImpl implements ExecutionService {
+    private static final Logger logger = LogManager.getLogger(ExecutionServiceImpl.class.getName());
+
+    @Override
     public void execute(WebDriver driver, ScenarioSourceListenerImpl sourceListener, ScenarioExecutor scenarioExecutor) {
 
         try {
@@ -24,7 +26,7 @@ public class ExecutionService {
             logger.info("Executing scenario...");
             scenarioExecutor.execute(scenario, driver);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Exception occurred during scenario execution: ", e);
+            logger.error("Exception occurred during scenario execution: ", e);
         } finally {
             logger.info("Quitting WebDriver...");
             driver.quit();

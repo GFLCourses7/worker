@@ -1,6 +1,7 @@
-package executor.service.utils;
+package executor.service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import executor.service.config.JsonConfigReader;
 import executor.service.exception.ConfigFileNotFoundException;
 import org.junit.jupiter.api.Test;
 

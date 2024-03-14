@@ -1,19 +1,19 @@
-package executor.service.factory;
+package executor.service.factory.difactory;
 
-import executor.service.executionService.ParallelFlowExecutorService;
-import executor.service.executor.ExecutionService;
-import executor.service.scenario.ScenarioExecutor;
-import executor.service.scenario.ScenarioExecutorService;
-import executor.service.scenario.ScenarioSourceListener;
-import executor.service.scenario.ScenarioSourceListenerImpl;
-import executor.service.steps.StepExecutionFactoryDefault;
+import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
+import executor.service.executor.executionservice.ExecutionServiceImpl;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.executor.scenarioexecutor.ScenarioExecutorService;
+import executor.service.listener.ScenarioSourceListener;
+import executor.service.listener.ScenarioSourceListenerImpl;
+import executor.service.factory.stepexecutionfactory.StepExecutionFactoryDefault;
 import executor.service.webdriver.ChromeDriverInitializer;
 import executor.service.webdriver.WebDriverInitializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static executor.service.factory.ContextStrategy.*;
+import static executor.service.factory.difactory.ContextStrategy.*;
 
 @SuppressWarnings("unchecked")
 public class DIFactory implements AbstractFactory {
@@ -32,7 +32,7 @@ public class DIFactory implements AbstractFactory {
         if (ScenarioSourceListener.class.isAssignableFrom(clazz))
             return getScenarioSourceListener(clazz);
 
-        if (ExecutionService.class.isAssignableFrom(clazz))
+        if (ExecutionServiceImpl.class.isAssignableFrom(clazz))
             return createExecutionService(clazz);
 
         if (ParallelFlowExecutorService.class.isAssignableFrom(clazz))
@@ -59,18 +59,18 @@ public class DIFactory implements AbstractFactory {
 
     private <T> T createExecutionService(Class<T> clazz) {
 
-        return (T) SINGLETON.initWithinContext(ExecutionService::new, context, clazz);
+        return (T) SINGLETON.initWithinContext(ExecutionServiceImpl::new, context, clazz);
     }
 
     private <T> T getParallelFlowExecutorService(Class<T> clazz) {
 
         ScenarioSourceListener scenarioSourceListener = create(ScenarioSourceListener.class);
-        ExecutionService executorService = create(ExecutionService.class);
+        ExecutionServiceImpl executorService = create(ExecutionServiceImpl.class);
         WebDriverInitializer webDriverInitializer = create(WebDriverInitializer.class);
         ScenarioExecutor scenarioExecutor = create(ScenarioExecutor.class);
 
         return (T) SINGLETON.initWithinContext(() -> new ParallelFlowExecutorService(
-                (ScenarioSourceListenerImpl) scenarioSourceListener,
+                scenarioSourceListener,
                 executorService,
                 webDriverInitializer,
                 scenarioExecutor

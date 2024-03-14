@@ -1,8 +1,8 @@
-package executor.service.scenario;
+package executor.service.executor.scenarioexecutor;
 
 import executor.service.model.Scenario;
 import executor.service.steps.StepExecution;
-import executor.service.steps.StepExecutionFactory;
+import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
