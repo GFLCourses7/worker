@@ -26,53 +26,70 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
     public WebDriver init() {
         LOGGER.log(Level.INFO, "Initializing WebDriver...");
 
-        WebDriverConfig webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
-        ProxyConfigHolder proxyConfigHolder = new ProxySourcesClientLoader().getProxy();
+        WebDriverConfig webDriverConfig = loadWebDriverConfig();
+        ProxyConfigHolder proxyConfigHolder = loadProxyConfig();
 
-        // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+        ChromeOptions options = configureChromeOptions(webDriverConfig);
 
-        // Configure Chrome options
-        ChromeOptions options = new ChromeOptions();
-
-        // Set user agent if provided
-        if (webDriverConfig.getUserAgent() != null) {
-            options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
-        }
-
-        // Set proxy if provided
         if (proxyConfigHolder != null && proxyConfigHolder.getProxyNetworkConfig() != null) {
-            Proxy proxy = getProxy(proxyConfigHolder);
-            options.setCapability(CapabilityType.PROXY, proxy);
-            LOGGER.log(Level.INFO, String.format("Proxy configured: %s:%d", proxyConfigHolder.getProxyNetworkConfig().getHostname(), proxyConfigHolder.getProxyNetworkConfig().getPort()));
+            configureProxy(options, proxyConfigHolder);
         }
 
-        // Initialize ChromeDriver
-        ChromeDriver driver = new ChromeDriver(options);
-
-        // Configure timeouts
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(webDriverConfig.getPageLoadTimeout()));
+        ChromeDriver driver = createChromeDriver(options);
+        configureTimeouts(driver, webDriverConfig);
 
         LOGGER.log(Level.INFO, "WebDriver initialized successfully.");
         return driver;
     }
 
-    private static Proxy getProxy(ProxyConfigHolder proxyConfigHolder) {
+    protected WebDriverConfig loadWebDriverConfig() {
+        return PropertiesConfigHolder.loadConfigFromFile();
+    }
+
+    protected ProxyConfigHolder loadProxyConfig() {
+        return new ProxySourcesClientLoader().getProxy();
+    }
+
+    protected ChromeOptions configureChromeOptions(WebDriverConfig webDriverConfig) {
+        ChromeOptions options = new ChromeOptions();
+        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+
+        if (webDriverConfig.getUserAgent() != null) {
+            options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
+        }
+
+        return options;
+    }
+
+    protected void configureProxy(ChromeOptions options, ProxyConfigHolder proxyConfigHolder) {
+        Proxy proxy = getProxy(proxyConfigHolder);
+        options.setCapability(CapabilityType.PROXY, proxy);
+        LOGGER.log(Level.INFO, String.format("Proxy configured: %s:%d", proxyConfigHolder.getProxyNetworkConfig().getHostname(), proxyConfigHolder.getProxyNetworkConfig().getPort()));
+    }
+
+    protected ChromeDriver createChromeDriver(ChromeOptions options) {
+        return new ChromeDriver(options);
+    }
+
+    protected void configureTimeouts(WebDriver driver, WebDriverConfig webDriverConfig) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(webDriverConfig.getPageLoadTimeout()));
+    }
+
+    protected Proxy getProxy(ProxyConfigHolder proxyConfigHolder) {
         LOGGER.log(Level.INFO, "Configuring proxy...");
 
         ProxyNetworkConfig proxyNetworkConfig = proxyConfigHolder.getProxyNetworkConfig();
         ProxyCredentials proxyCredentials = proxyConfigHolder.getProxyCredentials();
 
         BrowserMobProxyServer proxy = new BrowserMobProxyServer();
-
         proxy.setChainedProxy(new InetSocketAddress(proxyNetworkConfig.getHostname(), proxyNetworkConfig.getPort()));
 
-        if (proxyConfigHolder.getProxyCredentials()!=null)
+        if (proxyConfigHolder.getProxyCredentials() != null) {
             proxy.chainedProxyAuthorization(proxyCredentials.getUsername(), proxyCredentials.getPassword(), AuthType.BASIC);
+        }
 
         proxy.start(0);
-
         LOGGER.log(Level.INFO, "Proxy configured successfully");
         return ClientUtil.createSeleniumProxy(proxy);
     }

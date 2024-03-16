@@ -68,7 +68,8 @@ public class ParallelFlowExecutorService {
             if(scenario!=null){
             threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
                     (ScenarioSourceListenerImpl) scenarioSourceListener,
-                    scenarioExecutor));}
+                    scenarioExecutor));
+            }
         }
         LOGGER.info("shutdown ThreadPoolExecutor");
         threadPoolExecutor.shutdown();
