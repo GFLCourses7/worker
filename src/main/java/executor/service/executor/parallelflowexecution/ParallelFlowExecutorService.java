@@ -65,6 +65,7 @@ public class ParallelFlowExecutorService {
         }
 
         LOGGER.info("Start executing scenarios in threads ");
+
         for (Scenario ignored : scenarioQueue) {
 
             threadPoolExecutor.execute(() -> {

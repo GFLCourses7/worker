@@ -33,14 +33,12 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
     public WebDriver init() {
         LOGGER.info("Initializing WebDriver...");
 
-        WebDriverConfig webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
-        ProxyConfigHolder proxyConfigHolder = proxySourcesClient.getProxy();
 
-        // Set WebDriver executable
-        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+        WebDriverConfig webDriverConfig = loadWebDriverConfig();
+        ProxyConfigHolder proxyConfigHolder = loadProxyConfig();
 
         // Configure Chrome options
-        ChromeOptions options = new ChromeOptions();
+        ChromeOptions options = configureChromeOptions(webDriverConfig);
 
         // Set user agent if provided
         if (webDriverConfig.getUserAgent() != null) {
@@ -72,24 +70,54 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         }
 
         // Initialize ChromeDriver
-        ChromeDriver driver = new ChromeDriver(options);
+        ChromeDriver driver = createChromeDriver(options);
+
+        // Configure timeouts
+        configureTimeouts(driver, webDriverConfig);
 
         // Clear memory after driver has been initialized
         if (clearMemory != null)
             clearMemory.run();
 
-        // Configure timeouts
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(webDriverConfig.getPageLoadTimeout()));
 
         LOGGER.info("WebDriver initialized successfully.");
         return driver;
     }
 
+    protected WebDriverConfig loadWebDriverConfig() {
+        return PropertiesConfigHolder.loadConfigFromFile();
+    }
+
+    protected ProxyConfigHolder loadProxyConfig() {
+        return proxySourcesClient.getProxy();
+    }
+
+    protected ChromeOptions configureChromeOptions(WebDriverConfig webDriverConfig) {
+        ChromeOptions options = new ChromeOptions();
+        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+
+        if (webDriverConfig.getUserAgent() != null) {
+            options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
+        }
+
+        return options;
+    }
+
+    protected ChromeDriver createChromeDriver(ChromeOptions options) {
+        return new ChromeDriver(options);
+    }
+
+    protected void configureTimeouts(WebDriver driver, WebDriverConfig webDriverConfig) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));
+        driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(webDriverConfig.getPageLoadTimeout()));
+    }
+
+
     private boolean proxyHasNetwork(ProxyConfigHolder proxyConfigHolder) {
 
         if (proxyConfigHolder == null)
             return false;
+
 
         if (proxyConfigHolder.getProxyNetworkConfig() == null)
             return false;

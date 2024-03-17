@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openqa.selenium.WebDriver;
 
+import java.util.NoSuchElementException;
+
 import static org.mockito.Mockito.*;
 
 public class ExecutionServiceTest {
@@ -29,10 +31,9 @@ public class ExecutionServiceTest {
         Scenario scenario = new Scenario();
         scenario.setName("Test Scenario");
         scenario.setSite("http://example.com");
+
         when(mockedSourceListener.getScenario()).thenReturn(scenario);
-
         ExecutionServiceImpl executionService = new ExecutionServiceImpl();
-
         executionService.execute(mockedDriver, mockedSourceListener, mockedScenarioExecutor);
 
         verify(mockedDriver).get("http://example.com");
@@ -42,7 +43,7 @@ public class ExecutionServiceTest {
 
     @Test
     public void testMandatoryQuitAfterException() {
-        when(mockedSourceListener.getScenario()).thenReturn(null);
+        when(mockedSourceListener.getScenario()).thenThrow(new NoSuchElementException("Queue is empty"));
         ExecutionServiceImpl executionService = new ExecutionServiceImpl();
         executionService.execute(mockedDriver, mockedSourceListener, mockedScenarioExecutor);
         try {

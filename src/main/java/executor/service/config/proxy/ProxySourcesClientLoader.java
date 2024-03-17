@@ -4,7 +4,6 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.config.JsonConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
