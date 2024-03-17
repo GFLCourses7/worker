@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -43,7 +44,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
             }
         }
         logger.warn("Queue is empty");
-        return null;
+        throw new NoSuchElementException("Queue is empty");
     }
 
     public LinkedBlockingQueue<Scenario> getScenarios() {

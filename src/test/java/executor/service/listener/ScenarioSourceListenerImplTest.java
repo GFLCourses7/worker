@@ -1,20 +1,13 @@
 package executor.service.listener;
 
 import executor.service.config.JsonConfigReader;
-import executor.service.listener.ScenarioSourceListenerImpl;
 import executor.service.model.Scenario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
-
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
-
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -61,7 +54,7 @@ public class ScenarioSourceListenerImplTest {
 
             listener = new ScenarioSourceListenerImpl();
 
-            assertNull(listener.getScenario());
+            assertThrows(NoSuchElementException.class,() -> listener.getScenario());
         }
     }
 

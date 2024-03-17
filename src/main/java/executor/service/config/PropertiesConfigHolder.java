@@ -8,13 +8,13 @@ import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PropertiesConfigHolder {
     private static final Logger LOGGER = LogManager.getLogger(PropertiesConfigHolder.class.getName());
     public static final String PROPERTIES = "executorService.properties";
+    public static final String PATH = "src/main/resources/";
 
     private PropertiesConfigHolder() {
     }
@@ -23,7 +23,7 @@ public class PropertiesConfigHolder {
         LOGGER.info("Get properties from file: " + PROPERTIES);
         Configuration configuration = getConfiguration();
         return new WebDriverConfig(
-                configuration.getString("executorservice.common.webDriverExecutable"),
+                PATH + configuration.getString("executorservice.common.webDriverExecutable"),
                 configuration.getString("executorservice.common.userAgent"),
                 configuration.getLong("executorservice.common.pageLoadTimeout"),
                 configuration.getLong("executorservice.common.driverWait")
