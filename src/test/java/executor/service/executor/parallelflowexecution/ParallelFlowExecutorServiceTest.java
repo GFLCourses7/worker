@@ -1,12 +1,11 @@
 package executor.service.executor.parallelflowexecution;
 
-import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
+
 import executor.service.model.Scenario;
 import executor.service.model.ThreadPoolConfig;
 import executor.service.listener.ScenarioSourceListenerImpl;
 import executor.service.executor.executionservice.ExecutionServiceImpl;
 import executor.service.executor.scenarioexecutor.ScenarioExecutor;
-import executor.service.config.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ public class ParallelFlowExecutorServiceTest {
     @Mock
     private ScenarioExecutor mockScenarioExecutor;
     @Spy
-    private ThreadPoolConfig threadPoolConfig = new ThreadPoolConfig(4, 20000L);
+    private ThreadPoolConfig threadPoolConfig = new ThreadPoolConfig(3, 20000L);
     private final BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
     @Mock
     private ThreadPoolExecutor mockThreadPoolExecutor;
@@ -78,7 +77,7 @@ public class ParallelFlowExecutorServiceTest {
         ScenarioSourceListenerImpl scenarioSourceListener = new ScenarioSourceListenerImpl();
         Scenario scenario = new Scenario();
 
-        LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>(Arrays.asList(scenario,scenario,scenario));
+        LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>(Arrays.asList(scenario,scenario,scenario,scenario,scenario));
 
         scenarioSourceListener.setScenarios(scenarioQueue);
 
