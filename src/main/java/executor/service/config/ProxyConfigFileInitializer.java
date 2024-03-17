@@ -1,4 +1,4 @@
-package executor.service.utils;
+package executor.service.config;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class ProxyFileConfigInitializer {
+public class ProxyConfigFileInitializer {
 
     private static final String PROXY_FOLDER = "proxy\\temp";
 
@@ -14,7 +14,7 @@ public class ProxyFileConfigInitializer {
 
     private final Long id;
 
-    public ProxyFileConfigInitializer() {
+    public ProxyConfigFileInitializer() {
         this.id = progressCounter();
     }
 
@@ -149,5 +149,4 @@ public class ProxyFileConfigInitializer {
 
         return new File(path);
     }
-
 }
