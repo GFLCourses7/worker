@@ -1,5 +1,7 @@
 package executor.service.webdriver;
 
+import executor.service.config.ChromeProxyConfigurerBrowserMob;
+import executor.service.config.proxy.ProxySourcesClientLoader;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
@@ -40,7 +42,7 @@ public class ChromeDriverInitializerTest {
         ProxyConfigHolder proxyConfigHolder = new ProxyConfigHolder();
         proxyConfigHolder.setProxyNetworkConfig(proxyNetworkConfig);
 
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer());
+        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer(new ChromeProxyConfigurerBrowserMob(), new ProxySourcesClientLoader()));
         when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
         when(chromeDriverInitializer.loadProxyConfig()).thenReturn(proxyConfigHolder);
 
@@ -73,7 +75,7 @@ public class ChromeDriverInitializerTest {
             throw new RuntimeException(e);
         }
 
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer());
+        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer(new ChromeProxyConfigurerBrowserMob(), new ProxySourcesClientLoader()));
         when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
         when(chromeDriverInitializer.loadProxyConfig()).thenReturn(null);
 

@@ -4,9 +4,9 @@ import executor.service.executor.parallelflowexecution.ParallelFlowExecutorServi
 import executor.service.factory.difactory.AbstractFactory;
 import executor.service.factory.difactory.DIFactory;
 
-public class App
-{
+public class App {
     public static void main( String[] args ) {
+
         AbstractFactory factory = new DIFactory();
         ParallelFlowExecutorService parallelFlowExecutorService = factory.create(ParallelFlowExecutorService.class);
         parallelFlowExecutorService.startThreads();

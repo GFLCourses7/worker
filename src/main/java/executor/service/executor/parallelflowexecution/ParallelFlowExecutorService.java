@@ -59,17 +59,29 @@ public class ParallelFlowExecutorService {
 
         LinkedBlockingQueue<Scenario> scenarioQueue = ((ScenarioSourceListenerImpl) scenarioSourceListener).getScenarios();
 
-        if(scenarioQueue==null || scenarioQueue.isEmpty() ){
+        if (scenarioQueue == null || scenarioQueue.isEmpty()){
             LOGGER.warn("Scenario list is empty or null. No threads will be started.");
             return;
         }
+
         LOGGER.info("Start executing scenarios in threads ");
-        for (Scenario scenario: scenarioQueue) {
-            if(scenario!=null){
-            threadPoolExecutor.execute(() -> executionService.execute(webDriverInitializer.init(),
-                    (ScenarioSourceListenerImpl) scenarioSourceListener,
-                    scenarioExecutor));
-            }
+
+        for (Scenario ignored : scenarioQueue) {
+
+            threadPoolExecutor.execute(() -> {
+                // If executionService execute throws an error
+                // try/catch will catch it and won't allow thread
+                // to hang in an error state
+                try {
+                    executionService.execute(webDriverInitializer.init(),
+                            (ScenarioSourceListenerImpl) scenarioSourceListener,
+                            scenarioExecutor
+                    );
+                } catch (Exception e) {
+                    LOGGER.error(e);
+                }
+            });
+
         }
         LOGGER.info("shutdown ThreadPoolExecutor");
         threadPoolExecutor.shutdown();

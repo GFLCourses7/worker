@@ -8,18 +8,19 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ProxySourcesClientLoader implements ProxySourcesClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ProxySourcesClientLoader.class);
     private static final String PROXY_CONFIG_HOLDER_JSON = "ProxyConfigHolder.json";
-    private final List<ProxyConfigHolder> proxies;
+    private final LinkedBlockingQueue<ProxyConfigHolder> proxies = new LinkedBlockingQueue<>();
 
     public ProxySourcesClientLoader() {
-        proxies = readProxyConfigs();
+        readProxyConfigs();
     }
 
-    private List<ProxyConfigHolder> readProxyConfigs() {
+    private void readProxyConfigs() {
 
         // Look for ProxyConfigHolder.json inside /resources folder
         String path = null;
@@ -29,18 +30,25 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
             LOGGER.error(e);
         }
 
-        return JsonConfigReader.readFile(path, ProxyConfigHolder.class);
+        proxies.addAll(JsonConfigReader.readFile(path, ProxyConfigHolder.class));
     }
 
     @Override
     public ProxyConfigHolder getProxy() {
-        if (!proxies.isEmpty()) {
-            ProxyConfigHolder proxy = proxies.remove(0);
-            if (proxy.getProxyNetworkConfig() != null)
-                LOGGER.info(String.format("Returning %s proxy from proxies list.", proxy.getProxyNetworkConfig().getHostname()));
-            return proxy;
+
+        ProxyConfigHolder proxy = null;
+        while (proxy == null) {
+            try {
+                proxy = proxies.take();
+            } catch (InterruptedException e) {
+                LOGGER.error("Interrupted while waiting for proxy", e);
+                Thread.currentThread().interrupt();
+            }
         }
-        LOGGER.error("Trying to get proxy, while all proxies were used.");
-        throw new NoSuchElementException("No proxy is available.");
+
+        if (proxy.getProxyNetworkConfig() != null)
+            LOGGER.info(String.format("Returning %s proxy from proxies list.", proxy.getProxyNetworkConfig().getHostname()));
+
+        return proxy;
     }
 }

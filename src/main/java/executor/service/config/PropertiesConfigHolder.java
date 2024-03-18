@@ -23,7 +23,7 @@ public class PropertiesConfigHolder {
         LOGGER.info("Get properties from file: " + PROPERTIES);
         Configuration configuration = getConfiguration();
         return new WebDriverConfig(
-                PATH + configuration.getString("executorservice.common.webDriverExecutable"),
+                configuration.getString("executorservice.common.webDriverExecutable"),
                 configuration.getString("executorservice.common.userAgent"),
                 configuration.getLong("executorservice.common.pageLoadTimeout"),
                 configuration.getLong("executorservice.common.driverWait")

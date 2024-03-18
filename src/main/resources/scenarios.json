@@ -1,12 +1,13 @@
 [
   {
-    "name": "name"
-  },
-  {
     "name": "test scenario 1",
     "site": "http://info.cern.ch",
     "steps" : [
       {
+        "action": "sleep",
+        "value": "5000"
+      },
+      {
         "action": "clickCss",
         "value": "body > ul > li:nth-child(1) > a"
       },
@@ -21,63 +22,43 @@
     ]
   },
   {
-    "name": "test scenario 2",
-    "site": "http://info.cern.ch",
+    "name": "test scenario 1",
+    "site": "https://api.ipify.org/?format=json",
     "steps" : [
       {
-        "action": "clickXpath",
-        "value": "/html/body/p"
-      },
-      {
         "action": "sleep",
-        "value": "5:10"
-      },
-      {
-        "action": "clickCss",
-        "value": "body > ul > li:nth-child(1) > a"
+        "value": "5000"
       }
     ]
   },
   {
-    "name": "test scenario 2",
-    "site": "http://info.cern.ch",
+    "name": "test scenario 1",
+    "site": "https://api.ipify.org/?format=json",
     "steps" : [
       {
-        "action": "clickXpath",
-        "value": "/html/body/p"
-      },
-      {
         "action": "sleep",
-        "value": "5:10"
-      },
-      {
-        "action": "clickCss",
-        "value": "body > ul > li:nth-child(1) > a"
+        "value": "5000"
       }
     ]
   },
   {
-    "name": "name"
-  },
-  {
-    "name": "test scenario 2",
-    "site": "http://info.cern.ch",
+    "name": "test scenario 1",
+    "site": "https://api.ipify.org/?format=json",
     "steps" : [
       {
-        "action": "clickXpath",
-        "value": "/html/body/p"
-      },
-      {
         "action": "sleep",
-        "value": "5:10"
-      },
-      {
-        "action": "clickCss",
-        "value": "body > ul > li:nth-child(1) > a"
+        "value": "5000"
       }
     ]
   },
   {
-    "name": "name"
+    "name": "test scenario 1",
+    "site": "https://api.ipify.org/?format=json",
+    "steps" : [
+      {
+        "action": "sleep",
+        "value": "5000"
+      }
+    ]
   }
 ]

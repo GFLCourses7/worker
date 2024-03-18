@@ -6,16 +6,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
     private static final String SCENARIOS_JSON = "scenarios.json";
-    private LinkedBlockingQueue<Scenario> scenarios;
+    private LinkedBlockingQueue<Scenario> scenarios = new LinkedBlockingQueue<>();
 
     public ScenarioSourceListenerImpl() {
         execute();
@@ -30,21 +27,23 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         } catch (URISyntaxException e) {
             logger.error(e);
         }
-        List<Scenario> scenariosList = new ArrayList<>(JsonConfigReader.readFile(path, Scenario.class));
-        scenarios = new LinkedBlockingQueue<>(scenariosList);
+
+        scenarios.addAll(JsonConfigReader.readFile(path, Scenario.class));
     }
 
     public Scenario getScenario() {
-        if (!scenarios.isEmpty()) {
+
+        Scenario scenario = null;
+        while (scenario == null) {
             try {
-                return scenarios.take();
+                scenario = scenarios.take();
             } catch (InterruptedException e) {
                 logger.error("Interrupted while waiting for scenario", e);
                 Thread.currentThread().interrupt();
             }
         }
-        logger.warn("Queue is empty");
-        throw new NoSuchElementException("Queue is empty");
+
+        return scenario;
     }
 
     public LinkedBlockingQueue<Scenario> getScenarios() {

@@ -1,5 +1,7 @@
 package executor.service.factory.difactory;
 
+import executor.service.config.ChromeProxyConfigurerAddon;
+import executor.service.config.proxy.ProxySourcesClientLoader;
 import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
 import executor.service.executor.executionservice.ExecutionServiceImpl;
 import executor.service.executor.scenarioexecutor.ScenarioExecutor;
@@ -49,7 +51,7 @@ public class DIFactory implements AbstractFactory {
 
     private <T> T getWebDriverInitializer() {
 
-        return (T) new ChromeDriverInitializer();
+        return (T) new ChromeDriverInitializer(new ChromeProxyConfigurerAddon(), new ProxySourcesClientLoader());
     }
 
     private <T> T getScenarioSourceListener(Class<T> clazz) {
