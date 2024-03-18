@@ -61,11 +61,22 @@
           <artifactId>jackson-databind</artifactId>
           <version>2.15.3</version>
       </dependency>
-      <dependency>
-          <groupId>net.lightbody.bmp</groupId>
-          <artifactId>browsermob-core</artifactId>
-          <version>2.1.5</version>
-      </dependency>
+
+      <!--
+           !!! IMPORTANT !!!
+
+        *  net.lightbody.bmp library has broken digital signature .sb file
+        *  hence creating a .jar file with it is impossible unless .sb
+        *  files are deleted. For now it has been removed from the .pom
+        *  file
+       -->
+
+<!--      <dependency>-->
+<!--          <groupId>net.lightbody.bmp</groupId>-->
+<!--          <artifactId>browsermob-core</artifactId>-->
+<!--          <version>2.1.5</version>-->
+<!--      </dependency>-->
+
       <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-configuration2 -->
       <dependency>
           <groupId>org.apache.commons</groupId>

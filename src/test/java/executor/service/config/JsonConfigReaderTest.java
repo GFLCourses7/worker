@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,11 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class JsonConfigReaderTest {
 
     @Test
-    void testReadFile_Success() throws IOException {
+    void testReadFile_Success() {
         String json = "[{\"name\":\"John\"}]";
-        File tempFile = createTempJsonFile(json);
 
-        List<Person> persons = JsonConfigReader.readFile(tempFile.getAbsolutePath(), Person.class);
+        List<Person> persons = JsonConfigReader.readFile(json.getBytes(), Person.class);
 
         assertEquals("John", persons.get(0).getName());
     }
@@ -27,17 +27,19 @@ public class JsonConfigReaderTest {
     @Test
     void testReadFileIgnoreUnknownProperties() throws IOException {
         String json = "[{\"name\":\"John\",\"age\":30}]";
-        File tempFile = createTempJsonFile(json);
 
-        List<Person> persons = JsonConfigReader.readFile(tempFile.getAbsolutePath(), Person.class);
+        List<Person> persons = JsonConfigReader.readFile(json.getBytes(), Person.class);
 
         assertEquals("John", persons.get(0).getName());
     }
 
-    @Test
+
     void testReadFile_IOException() {
-        assertThrows(ConfigFileNotFoundException.class,
-                () -> JsonConfigReader.readFile("fakeFile", Person.class));
+
+        // Method doesn't load files anymore
+
+//        assertThrows(ConfigFileNotFoundException.class,
+//                () -> JsonConfigReader.readFile("fakeFile", Person.class));
     }
 
     // Helper method to create a temporary JSON file

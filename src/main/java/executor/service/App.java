@@ -4,8 +4,15 @@ import executor.service.executor.parallelflowexecution.ParallelFlowExecutorServi
 import executor.service.factory.difactory.AbstractFactory;
 import executor.service.factory.difactory.DIFactory;
 
+
 public class App {
+
     public static void main( String[] args ) {
+
+        new App().start();
+    }
+
+    public void start() {
 
         AbstractFactory factory = new DIFactory();
         ParallelFlowExecutorService parallelFlowExecutorService = factory.create(ParallelFlowExecutorService.class);
