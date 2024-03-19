@@ -5,13 +5,21 @@ import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 public class ChromeProxyConfigurerAddon implements ChromeProxyConfigurer {
+
+
+    private final Supplier<ProxyConfigFileInitializer> proxyConfigFileInitializerSupplier;
+
+    public ChromeProxyConfigurerAddon(Supplier<ProxyConfigFileInitializer> proxyConfigFileInitializerSupplier) {
+        this.proxyConfigFileInitializerSupplier = proxyConfigFileInitializerSupplier;
+    }
 
     @Override
     public Runnable configureProxy(ChromeOptions options, ProxyConfigHolder proxyConfigHolder) throws IOException {
 
-        ProxyConfigFileInitializer proxyFileConfigInitializer = new ProxyConfigFileInitializer();
+        ProxyConfigFileInitializer proxyFileConfigInitializer = proxyConfigFileInitializerSupplier.get();
 
         File configZip = proxyFileConfigInitializer.initProxyConfigFile(
                 proxyConfigHolder.getProxyNetworkConfig().getHostname(),

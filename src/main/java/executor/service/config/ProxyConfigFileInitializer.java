@@ -8,11 +8,11 @@ import java.util.zip.ZipOutputStream;
 
 public class ProxyConfigFileInitializer {
 
-    private static final String PROXY_FOLDER = "proxy\\temp";
+    protected static final String PROXY_FOLDER = "proxy\\temp";
 
-    private static Long counter = 0L;
+    protected static Long counter = 0L;
 
-    private final Long id;
+    protected final Long id;
 
     public ProxyConfigFileInitializer() {
         this.id = progressCounter();

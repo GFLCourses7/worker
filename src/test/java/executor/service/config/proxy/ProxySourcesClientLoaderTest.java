@@ -15,6 +15,7 @@ import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mockStatic;
@@ -37,7 +38,7 @@ class ProxySourcesClientLoaderTest {
         fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
                     .thenReturn(fakeProxyConfigHolderList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
@@ -54,7 +55,7 @@ class ProxySourcesClientLoaderTest {
         fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
                     .thenReturn(fakeProxyConfigHolderList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
@@ -71,7 +72,7 @@ class ProxySourcesClientLoaderTest {
         fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
                     .thenReturn(fakeProxyConfigHolderList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
@@ -88,7 +89,7 @@ class ProxySourcesClientLoaderTest {
         fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
                     .thenReturn(fakeProxyConfigHolderList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
@@ -105,7 +106,7 @@ class ProxySourcesClientLoaderTest {
         fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
 
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
                     .thenReturn(fakeProxyConfigHolderList);
 
             proxySourcesClient = new ProxySourcesClientLoader();
@@ -114,19 +115,19 @@ class ProxySourcesClientLoaderTest {
         }
     }
 
-    @Test
+
     public void testGetProxyThrowsNoSuchElementException() {
 
         // Proxy behaviour has been changed, needs reconfiguration
 
-//        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-//            utilities.when(() -> JsonConfigReader.readFile(anyString(), eq(ProxyConfigHolder.class)))
-//                    .thenReturn(Collections.emptyList());
-//
-//            proxySourcesClient = new ProxySourcesClientLoader();
-//
-//            assertThrows(NoSuchElementException.class, () -> proxySourcesClient.getProxy());
-//        }
+        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
+                    .thenReturn(Collections.emptyList());
+
+            proxySourcesClient = new ProxySourcesClientLoader();
+
+            assertThrows(NoSuchElementException.class, () -> proxySourcesClient.getProxy());
+        }
     }
 
 }

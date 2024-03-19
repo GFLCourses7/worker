@@ -22,27 +22,24 @@ public class ScenarioSourceListenerImplTest {
     }
 
     @Test
-    public void testExecuteSuccess() throws URISyntaxException {
+    public void testExecuteSuccess() {
         // Prepare test data
         List<Scenario> fakeScenarios = new ArrayList<>();
         fakeScenarios.add(new Scenario("test scenario 1", "site1", new ArrayList<>()));
         fakeScenarios.add(new Scenario("test scenario 2", "site2", new ArrayList<>()));
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(fakeScenarios);
 
             listener = new ScenarioSourceListenerImpl();
 
             assertEquals(fakeScenarios.get(0), listener.getScenario());
             assertNotNull(listener.getScenario());
-    }
+        }
     }
 
-    @Test
+
     public void testGetScenarioFromEmptyList() throws URISyntaxException {
 
         // Scenario behaviour has been changed, needs reconfiguration

@@ -2,8 +2,6 @@ package executor.service.factory.difactory;
 
 import executor.service.executor.parallelflowexecution.ParallelFlowExecutorService;
 import executor.service.executor.executionservice.ExecutionServiceImpl;
-import executor.service.factory.difactory.AbstractFactory;
-import executor.service.factory.difactory.DIFactory;
 import executor.service.model.Scenario;
 import executor.service.executor.scenarioexecutor.ScenarioExecutor;
 import executor.service.executor.scenarioexecutor.ScenarioExecutorService;
@@ -16,14 +14,13 @@ import org.junit.jupiter.api.*;
 import org.mockito.MockedStatic;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Objects;
 
 public class DIFactoryTest {
 
@@ -54,14 +51,10 @@ public class DIFactoryTest {
 
         AbstractFactory abstractFactory = new DIFactory();
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
-
         // Mocking of static method works only inside of this try with resources method
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
 
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(new ArrayList<>());
 
             abstractFactory.create(ScenarioSourceListener.class);
@@ -132,14 +125,10 @@ public class DIFactoryTest {
         Class<?> expected;
         Class<?> actual;
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
-
         // Mocking of static method works only inside of this try with resources method
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
 
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(new ArrayList<>());
 
             expected = ScenarioSourceListenerImpl.class;
@@ -162,13 +151,10 @@ public class DIFactoryTest {
         ScenarioSourceListener expected;
         ScenarioSourceListener actual;
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
         // Mocking of static method works only inside of this try with resources method
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
 
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(new ArrayList<>());
 
             expected = abstractFactory.create(ScenarioSourceListener.class);
@@ -224,13 +210,10 @@ public class DIFactoryTest {
         Class<?> expected;
         Class<?> actual;
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
         // Mocking of static method works only inside of this try with resources method
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
 
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(new ArrayList<>());
 
             expected = ParallelFlowExecutorService.class;
@@ -253,13 +236,10 @@ public class DIFactoryTest {
         Class<?> expected;
         Class<?> actual;
 
-        // Look for scenarios.json inside /resources folder
-        String path = Objects.requireNonNull(getClass().getClassLoader().getResource(SCENARIOS_JSON)).toURI().getPath();
-
         // Mocking of static method works only inside of this try with resources method
         try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
 
-            utilities.when(() -> JsonConfigReader.readFile(eq(path), eq(Scenario.class)))
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(Scenario.class)))
                     .thenReturn(new ArrayList<>());
 
             expected = abstractFactory.create(ParallelFlowExecutorService.class).getClass();

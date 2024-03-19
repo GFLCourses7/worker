@@ -1,5 +1,6 @@
 package executor.service.webdriver;
 
+import executor.service.config.ChromeProxyConfigurerAddon;
 import executor.service.config.ChromeProxyConfigurerBrowserMob;
 import executor.service.config.proxy.ProxySourcesClientLoader;
 import executor.service.model.ProxyConfigHolder;
@@ -26,8 +27,21 @@ public class ChromeDriverInitializerTest {
         webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
     }
 
-    @Test
+
+    /*
+     *  !!! IMPORTANT !!!
+     *
+     *  net.lightbody.bmp library has broken digital signature .sb file
+     *  hence creating a .jar file with it is impossible unless .sb
+     *  files are deleted. For now it has been removed from the .pom
+     *  file
+     *
+     * */
+
     public void testInitWebDriverWithProxy() {
+
+        // Uses net.lightbody.bmp for testing, requires reconfiguration
+
         try (MockedStatic<PropertiesConfigHolder> fakePropertiesConfigHolder = Mockito.mockStatic(PropertiesConfigHolder.class)) {
             fakePropertiesConfigHolder.when(PropertiesConfigHolder::loadConfigFromFile)
                     .thenReturn(webDriverConfig);

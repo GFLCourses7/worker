@@ -4,6 +4,8 @@ import executor.service.model.ProxyConfigHolder;
 import executor.service.config.JsonConfigReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -23,14 +25,16 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
     private void readProxyConfigs() {
 
         // Look for ProxyConfigHolder.json inside /resources folder
-        String path = null;
+        byte[] file = null;
         try {
-            path = Objects.requireNonNull(getClass().getClassLoader().getResource(PROXY_CONFIG_HOLDER_JSON)).toURI().getPath();
-        } catch (URISyntaxException e) {
+            file = Objects.requireNonNull(
+                    getClass().getClassLoader().getResourceAsStream(PROXY_CONFIG_HOLDER_JSON)
+            ).readAllBytes();
+        } catch (IOException e) {
             LOGGER.error(e);
         }
 
-        proxies.addAll(JsonConfigReader.readFile(path, ProxyConfigHolder.class));
+        proxies.addAll(JsonConfigReader.readFile(file, ProxyConfigHolder.class));
     }
 
     @Override
