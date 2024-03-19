@@ -27,7 +27,7 @@ public class ProxyConfigFileInitializer {
     public File initProxyConfigFile(String IP, Integer port, String username, String password) throws IOException {
 
         // Create necessary directories
-        Files.createDirectories(Paths.get(getPath("")));
+        Files.createDirectories(Paths.get(getPath()));
 
         String manifest = getManifest();
         File manifestFile = createFile(manifest, "manifest.json");
@@ -39,7 +39,7 @@ public class ProxyConfigFileInitializer {
     }
 
     public void clearDirectory() {
-        File directory = new File(getPath(""));
+        File directory = new File(getPath());
         if (!deleteDirectory(directory)) {
             throw new IllegalStateException(String.format("Couldn't clear directory %s", directory.getAbsolutePath()));
         }
@@ -108,8 +108,12 @@ public class ProxyConfigFileInitializer {
                 """, IP, port, username, password);
     }
 
+    private String getPath() {
+        return System.getProperty("user.dir") + "\\" + PROXY_FOLDER + "\\" + id + "\\";
+    }
+
     private String getPath(String filename) {
-        return System.getProperty("user.dir") + "\\" + PROXY_FOLDER + "\\" + id + "\\" + filename;
+        return getPath() + filename;
     }
 
     private File createFile(String contents, String filename) throws IOException {

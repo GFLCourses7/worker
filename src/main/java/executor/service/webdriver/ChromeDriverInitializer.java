@@ -33,7 +33,6 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
     public WebDriver init() {
         LOGGER.info("Initializing WebDriver...");
 
-
         WebDriverConfig webDriverConfig = loadWebDriverConfig();
         ProxyConfigHolder proxyConfigHolder = loadProxyConfig();
 
@@ -65,7 +64,6 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
                         proxyConfigHolder.getProxyNetworkConfig().getHostname(),
                         proxyConfigHolder.getProxyNetworkConfig().getPort()
                 ));
-
             }
         }
 
@@ -78,7 +76,6 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         // Clear memory after driver has been initialized
         if (clearMemory != null)
             clearMemory.run();
-
 
         LOGGER.info("WebDriver initialized successfully.");
         return driver;
@@ -122,11 +119,8 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         if (proxyConfigHolder.getProxyNetworkConfig() == null)
             return false;
 
-        if (proxyConfigHolder.getProxyNetworkConfig().getHostname() == null
-                || proxyConfigHolder.getProxyNetworkConfig().getPort() == null)
-            return false;
-
-        return true;
+        return proxyConfigHolder.getProxyNetworkConfig().getHostname() != null
+                && proxyConfigHolder.getProxyNetworkConfig().getPort() != null;
     }
 
     private boolean proxyHasCredentials(ProxyConfigHolder proxyConfigHolder) {
@@ -137,10 +131,7 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         if (proxyConfigHolder.getProxyCredentials() == null)
             return false;
 
-        if (proxyConfigHolder.getProxyCredentials().getUsername() == null
-                || proxyConfigHolder.getProxyCredentials().getPassword() == null)
-            return false;
-
-        return true;
+        return proxyConfigHolder.getProxyCredentials().getUsername() != null
+                && proxyConfigHolder.getProxyCredentials().getPassword() != null;
     }
 }
