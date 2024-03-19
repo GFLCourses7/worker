@@ -1,8 +1,9 @@
 package executor.service.webdriver;
 
 import executor.service.config.ChromeProxyConfigurerAddon;
-import executor.service.config.ChromeProxyConfigurerBrowserMob;
+import executor.service.config.ProxyConfigFileInitializer;
 import executor.service.config.proxy.ProxySourcesClientLoader;
+import executor.service.factory.difactory.DIFactory;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
@@ -27,20 +28,8 @@ public class ChromeDriverInitializerTest {
         webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
     }
 
-
-    /*
-     *  !!! IMPORTANT !!!
-     *
-     *  net.lightbody.bmp library has broken digital signature .sb file
-     *  hence creating a .jar file with it is impossible unless .sb
-     *  files are deleted. For now it has been removed from the .pom
-     *  file
-     *
-     * */
-
+    @Test
     public void testInitWebDriverWithProxy() {
-
-        // Uses net.lightbody.bmp for testing, requires reconfiguration
 
         try (MockedStatic<PropertiesConfigHolder> fakePropertiesConfigHolder = Mockito.mockStatic(PropertiesConfigHolder.class)) {
             fakePropertiesConfigHolder.when(PropertiesConfigHolder::loadConfigFromFile)
@@ -56,14 +45,15 @@ public class ChromeDriverInitializerTest {
         ProxyConfigHolder proxyConfigHolder = new ProxyConfigHolder();
         proxyConfigHolder.setProxyNetworkConfig(proxyNetworkConfig);
 
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer(new ChromeProxyConfigurerBrowserMob(), new ProxySourcesClientLoader()));
+        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(
+                new ChromeDriverInitializer(
+                        new ChromeProxyConfigurerAddon(ProxyConfigFileInitializer::new),
+                        new ProxySourcesClientLoader()
+                )
+        );
+
         when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
         when(chromeDriverInitializer.loadProxyConfig()).thenReturn(proxyConfigHolder);
-
-        ChromeOptions options = new ChromeOptions();
-        Proxy proxy = mock(Proxy.class);
-        options.setCapability(CapabilityType.PROXY, proxy);
-        when(chromeDriverInitializer.configureChromeOptions(webDriverConfig)).thenReturn(options);
 
         // Act
         WebDriver driver = chromeDriverInitializer.init();
@@ -73,7 +63,7 @@ public class ChromeDriverInitializerTest {
         verify(chromeDriverInitializer, times(1)).loadWebDriverConfig();
         verify(chromeDriverInitializer, times(1)).loadProxyConfig();
         verify(chromeDriverInitializer, times(1)).configureChromeOptions(webDriverConfig);
-        verify(chromeDriverInitializer, times(1)).createChromeDriver(options);
+        verify(chromeDriverInitializer, times(1)).createChromeDriver(any());
 
         driver.quit();
 
@@ -89,7 +79,13 @@ public class ChromeDriverInitializerTest {
             throw new RuntimeException(e);
         }
 
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(new ChromeDriverInitializer(new ChromeProxyConfigurerBrowserMob(), new ProxySourcesClientLoader()));
+        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(
+                new ChromeDriverInitializer(
+                        new ChromeProxyConfigurerAddon(ProxyConfigFileInitializer::new),
+                        new ProxySourcesClientLoader()
+                )
+        );
+
         when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
         when(chromeDriverInitializer.loadProxyConfig()).thenReturn(null);
 
