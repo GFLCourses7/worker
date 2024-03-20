@@ -39,19 +39,23 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
 
     @Override
     public ProxyConfigHolder getProxy() {
-
         ProxyConfigHolder proxy = null;
-        while (proxy == null) {
+
+        // Check if proxies queue is empty before attempting to take a proxy
+        if (!proxies.isEmpty()) {
             try {
                 proxy = proxies.take();
             } catch (InterruptedException e) {
                 LOGGER.error("Interrupted while waiting for proxy", e);
                 Thread.currentThread().interrupt();
             }
+        } else {
+            LOGGER.warn("No proxies available in the queue.");
         }
 
-        if (proxy.getProxyNetworkConfig() != null)
+        if (proxy != null && proxy.getProxyNetworkConfig() != null) {
             LOGGER.info(String.format("Returning %s proxy from proxies list.", proxy.getProxyNetworkConfig().getHostname()));
+        }
 
         return proxy;
     }

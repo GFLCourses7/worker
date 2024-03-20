@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
@@ -44,6 +44,23 @@ class ProxySourcesClientLoaderTest {
             proxySourcesClient = new ProxySourcesClientLoader();
             ProxyConfigHolder proxy = proxySourcesClient.getProxy();
             assertEquals(fakeProxyConfigHolder, proxy);
+        }
+    }
+    @Test
+    public void testGetSecondProxyWhileOnlyOneWasAvailable() {
+        List<ProxyConfigHolder> fakeProxyConfigHolderList = new ArrayList<>();
+        fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
+
+        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
+                    .thenReturn(fakeProxyConfigHolderList);
+
+            proxySourcesClient = new ProxySourcesClientLoader();
+            ProxyConfigHolder proxy = proxySourcesClient.getProxy();
+            assertEquals(fakeProxyConfigHolder, proxy);
+
+            ProxyConfigHolder proxy2 = proxySourcesClient.getProxy();
+            assertNull(proxy2);
         }
     }
 
