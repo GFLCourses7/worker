@@ -1,15 +1,18 @@
 package executor.service.factory.stepexecutionfactory;
 
-import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import executor.service.steps.ClickCss;
 import executor.service.steps.ClickXpath;
 import executor.service.steps.Sleep;
 import executor.service.steps.StepExecution;
 import executor.service.utils.StepAction;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+@Component
+@Scope("prototype")
 public class StepExecutionFactoryDefault implements StepExecutionFactory {
 
     public StepExecution createStepExecution(String stepAction) {

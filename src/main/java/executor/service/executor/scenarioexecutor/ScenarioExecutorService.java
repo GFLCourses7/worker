@@ -6,7 +6,9 @@ import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ScenarioExecutorService implements ScenarioExecutor {
 
     private static final Logger logger = LogManager.getLogger(ScenarioExecutorService.class);
