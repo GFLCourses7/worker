@@ -3,7 +3,6 @@ package executor.service.webdriver;
 import executor.service.config.ChromeProxyConfigurerAddon;
 import executor.service.config.ProxyConfigFileInitializer;
 import executor.service.config.proxy.ProxySourcesClientLoader;
-import executor.service.factory.difactory.DIFactory;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
@@ -12,10 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.CapabilityType;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
