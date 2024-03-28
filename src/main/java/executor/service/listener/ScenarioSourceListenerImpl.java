@@ -36,6 +36,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         scenarios.addAll(JsonConfigReader.readFile(file, Scenario.class));
     }
 
+    @Override
     public Scenario getScenario() {
 
         Scenario scenario = null;
@@ -49,6 +50,11 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         }
 
         return scenario;
+    }
+
+    @Override
+    public void addScenario(Scenario scenario) {
+        scenarios.add(scenario);
     }
 
     public LinkedBlockingQueue<Scenario> getScenarios() {
