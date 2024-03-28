@@ -7,11 +7,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
+
+
 @Service
 public class ProxySourcesClientLoader implements ProxySourcesClient {
 
