@@ -124,7 +124,7 @@
                   </descriptorRefs>
                   <archive>
                       <manifest>
-                          <mainClass>com.web.App</mainClass>
+                          <mainClass>executor.service.App</mainClass>
                       </manifest>
                   </archive>
               </configuration>
