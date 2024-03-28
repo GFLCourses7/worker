@@ -6,7 +6,9 @@ import executor.service.listener.ScenarioSourceListenerImpl;
 import org.openqa.selenium.WebDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ExecutionServiceImpl implements ExecutionService {
     private static final Logger logger = LogManager.getLogger(ExecutionServiceImpl.class.getName());
 
@@ -14,7 +16,6 @@ public class ExecutionServiceImpl implements ExecutionService {
     public void execute(WebDriver driver, ScenarioSourceListenerImpl sourceListener, ScenarioExecutor scenarioExecutor) {
         try {
             Scenario scenario = sourceListener.getScenario();
-
             logger.info("Starting execution for scenario: " + scenario.getName());
 
             logger.info("Navigating to site: " + scenario.getSite());
