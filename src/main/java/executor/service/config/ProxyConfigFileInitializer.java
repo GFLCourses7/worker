@@ -14,7 +14,7 @@ import java.util.zip.ZipOutputStream;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ProxyConfigFileInitializer {
 
-    protected static final String PROXY_FOLDER = "proxy\\temp";
+    protected static final String PROXY_FOLDER = "proxy/temp";
 
     protected static Long counter = 0L;
 
@@ -115,7 +115,7 @@ public class ProxyConfigFileInitializer {
     }
 
     private String getPath() {
-        return System.getProperty("user.dir") + "\\" + PROXY_FOLDER + "\\" + id + "\\";
+        return System.getProperty("user.dir") + "/" + PROXY_FOLDER + "/" + id + "/";
     }
 
     private String getPath(String filename) {
