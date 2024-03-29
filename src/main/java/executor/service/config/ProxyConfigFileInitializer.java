@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
@@ -14,7 +16,9 @@ import java.util.zip.ZipOutputStream;
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class ProxyConfigFileInitializer {
 
-    protected static final String PROXY_FOLDER = "proxy/temp";
+    private static final String fileSeparator = FileSystems.getDefault().getSeparator();
+
+    protected static final String PROXY_FOLDER = "proxy" + fileSeparator +"temp";
 
     protected static Long counter = 0L;
 
@@ -115,7 +119,10 @@ public class ProxyConfigFileInitializer {
     }
 
     private String getPath() {
-        return System.getProperty("user.dir") + "/" + PROXY_FOLDER + "/" + id + "/";
+        return System.getProperty("user.dir")
+                + fileSeparator + PROXY_FOLDER
+                + fileSeparator + id
+                + fileSeparator;
     }
 
     private String getPath(String filename) {
