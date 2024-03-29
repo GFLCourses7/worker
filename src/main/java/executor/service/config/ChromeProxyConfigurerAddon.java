@@ -2,22 +2,25 @@ package executor.service.config;
 
 import executor.service.model.ProxyConfigHolder;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.ObjectFactory;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.function.Supplier;
 
+@Service
 public class ChromeProxyConfigurerAddon implements ChromeProxyConfigurer {
 
-    private final Supplier<ProxyConfigFileInitializer> proxyConfigFileInitializerSupplier;
+    private final ObjectFactory<ProxyConfigFileInitializer> proxyConfigFileInitializerObjectFactory;
 
-    public ChromeProxyConfigurerAddon(Supplier<ProxyConfigFileInitializer> proxyConfigFileInitializerSupplier) {
-        this.proxyConfigFileInitializerSupplier = proxyConfigFileInitializerSupplier;
+    public ChromeProxyConfigurerAddon(ObjectFactory<ProxyConfigFileInitializer> proxyConfigFileInitializerObjectFactory) {
+        this.proxyConfigFileInitializerObjectFactory = proxyConfigFileInitializerObjectFactory;
     }
 
     @Override
     public Runnable configureProxy(ChromeOptions options, ProxyConfigHolder proxyConfigHolder) throws IOException {
 
-        ProxyConfigFileInitializer proxyFileConfigInitializer = proxyConfigFileInitializerSupplier.get();
+        ProxyConfigFileInitializer proxyFileConfigInitializer = proxyConfigFileInitializerObjectFactory.getObject();
 
         File configZip = proxyFileConfigInitializer.initProxyConfigFile(
                 proxyConfigHolder.getProxyNetworkConfig().getHostname(),

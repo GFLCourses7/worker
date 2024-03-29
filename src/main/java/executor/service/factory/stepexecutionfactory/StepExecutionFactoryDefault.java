@@ -5,15 +5,23 @@ import executor.service.steps.ClickXpath;
 import executor.service.steps.Sleep;
 import executor.service.steps.StepExecution;
 import executor.service.utils.StepAction;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-@Component
-@Scope("prototype")
+@Service
 public class StepExecutionFactoryDefault implements StepExecutionFactory {
+
+    private final ClickCss clickCss;
+    private final ClickXpath clickXpath;
+    private final Sleep sleep;
+
+    public StepExecutionFactoryDefault(ClickCss clickCss, ClickXpath clickXpath, Sleep sleep) {
+        this.clickCss = clickCss;
+        this.clickXpath = clickXpath;
+        this.sleep = sleep;
+    }
 
     public StepExecution createStepExecution(String stepAction) {
 
@@ -29,13 +37,13 @@ public class StepExecutionFactoryDefault implements StepExecutionFactory {
         StepExecution stepExecution = null;
         switch (optionalStepAction.get()) {
             case CLICK_CSS -> {
-                stepExecution = new ClickCss();
+                stepExecution = clickCss;
             }
             case CLICK_XPATH -> {
-                stepExecution = new ClickXpath();
+                stepExecution = clickXpath;
             }
             case SLEEP -> {
-                stepExecution = new Sleep();
+                stepExecution = sleep;
             }
         }
 

@@ -5,7 +5,6 @@ import executor.service.listener.ScenarioSourceListener;
 import executor.service.model.Scenario;
 import executor.service.model.ThreadPoolConfig;
 import executor.service.executor.scenarioexecutor.ScenarioExecutor;
-import executor.service.listener.ScenarioSourceListenerImpl;
 import executor.service.config.PropertiesConfigHolder;
 import executor.service.webdriver.WebDriverInitializer;
 
@@ -39,6 +38,9 @@ public class ParallelFlowExecutorService {
         this.scenarioExecutor = scenarioExecutor;
         this.threadPoolConfig = PropertiesConfigHolder.loadThreadConfigFromFile();
         this.threadPoolExecutor = initExecutor();
+
+        // Start threads after class initialization
+        new Thread(this::startThreads).start();
     }
 
     ThreadPoolExecutor initExecutor() {
@@ -59,16 +61,11 @@ public class ParallelFlowExecutorService {
 
     public void startThreads() {
 
-        LinkedBlockingQueue<Scenario> scenarioQueue = ((ScenarioSourceListenerImpl) scenarioSourceListener).getScenarios();
-
-        if (scenarioQueue == null || scenarioQueue.isEmpty()){
-            LOGGER.warn("Scenario list is empty or null. No threads will be started.");
-            return;
-        }
-
         LOGGER.info("Start executing scenarios in threads ");
 
-        for (Scenario ignored : scenarioQueue) {
+        while (!Thread.interrupted()) {
+
+            Scenario scenario = scenarioSourceListener.getScenario();
 
             threadPoolExecutor.execute(() -> {
                 // If executionService execute throws an error
@@ -76,7 +73,7 @@ public class ParallelFlowExecutorService {
                 // to hang in an error state
                 try {
                     executionService.execute(webDriverInitializer.init(),
-                            (ScenarioSourceListenerImpl) scenarioSourceListener,
+                            scenario,
                             scenarioExecutor
                     );
                 } catch (Exception e) {

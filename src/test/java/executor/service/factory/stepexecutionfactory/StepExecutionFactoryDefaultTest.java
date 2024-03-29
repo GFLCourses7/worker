@@ -1,7 +1,8 @@
 package executor.service.factory.stepexecutionfactory;
 
-import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
-import executor.service.factory.stepexecutionfactory.StepExecutionFactoryDefault;
+import executor.service.steps.ClickCss;
+import executor.service.steps.ClickXpath;
+import executor.service.steps.Sleep;
 import executor.service.steps.StepExecution;
 import org.junit.jupiter.api.*;
 
@@ -13,7 +14,7 @@ public class StepExecutionFactoryDefaultTest {
 
     @BeforeEach
     public void initFactory() {
-        stepExecutionFactoryDefault = new StepExecutionFactoryDefault();
+        stepExecutionFactoryDefault = new StepExecutionFactoryDefault(new ClickCss(), new ClickXpath(), new Sleep());
     }
 
     @Test
