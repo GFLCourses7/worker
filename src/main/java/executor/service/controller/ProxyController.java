@@ -13,12 +13,12 @@ public class ProxyController {
 
     private final ProxySourcesClientLoader proxySourcesClientLoader;
 
-    public ProxyController(ProxySourcesClientLoader scenarioSourceListener) {
-        this.proxySourcesClientLoader = scenarioSourceListener;
+    public ProxyController(ProxySourcesClientLoader proxySourcesClientLoader) {
+        this.proxySourcesClientLoader = proxySourcesClientLoader;
     }
 
     @PostMapping
-    ProxyConfigHolder addScenario(@RequestBody ProxyConfigHolder proxy) {
+    ProxyConfigHolder addProxy(@RequestBody ProxyConfigHolder proxy) {
         proxySourcesClientLoader.addProxy(proxy);
         return proxy;
     }
