@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/proxy")
 public class ProxyController {
 
     private final ProxySourcesClientLoader proxySourcesClientLoader;
@@ -17,7 +16,7 @@ public class ProxyController {
         this.proxySourcesClientLoader = proxySourcesClientLoader;
     }
 
-    @PostMapping
+    @PostMapping("/add-proxy")
     ProxyConfigHolder addProxy(@RequestBody ProxyConfigHolder proxy) {
         proxySourcesClientLoader.addProxy(proxy);
         return proxy;
