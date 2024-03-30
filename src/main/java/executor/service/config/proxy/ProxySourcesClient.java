@@ -4,4 +4,5 @@ import executor.service.model.ProxyConfigHolder;
 
 public interface ProxySourcesClient{
     ProxyConfigHolder getProxy();
+    void addProxy(ProxyConfigHolder proxyConfigHolder);
 }

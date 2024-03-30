@@ -115,6 +115,57 @@ class ProxySourcesClientLoaderTest {
         }
     }
 
+    @Test
+    public void testAddProxy() {
+        fakeProxyConfigHolder.getProxyCredentials().setPassword(null);
+
+        List<ProxyConfigHolder> fakeProxyConfigHolderList = new ArrayList<>();
+        fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
+
+        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
+                    .thenReturn(fakeProxyConfigHolderList);
+
+            proxySourcesClient = new ProxySourcesClientLoader();
+            ProxyConfigHolder proxy1 = proxySourcesClient.getProxy();
+
+            proxySourcesClient.addProxy(fakeProxyConfigHolder);
+            ProxyConfigHolder proxy2 = proxySourcesClient.getProxy();
+
+            assertEquals(fakeProxyConfigHolder, proxy1);
+            assertEquals(fakeProxyConfigHolder, proxy2);
+            assertEquals(proxy1, proxy2);
+        }
+    }
+    @Test
+    public void testAddProxyWhileWaiting() {
+        fakeProxyConfigHolder.getProxyCredentials().setPassword(null);
+
+        List<ProxyConfigHolder> fakeProxyConfigHolderList = new ArrayList<>();
+        fakeProxyConfigHolderList.add(fakeProxyConfigHolder);
+
+        try (MockedStatic<JsonConfigReader> utilities = mockStatic(JsonConfigReader.class)) {
+            utilities.when(() -> JsonConfigReader.readFile(any(byte[].class), eq(ProxyConfigHolder.class)))
+                    .thenReturn(fakeProxyConfigHolderList);
+
+            proxySourcesClient = new ProxySourcesClientLoader();
+
+            Runnable runnable = () -> {
+                try {
+                    Thread.sleep(5000);
+                    proxySourcesClient.addProxy(fakeProxyConfigHolder);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            };
+
+            runnable.run();
+            ProxyConfigHolder proxy = proxySourcesClient.getProxy();
+
+            assertEquals(fakeProxyConfigHolder, proxy);
+        }
+    }
+
 
     public void testGetProxyThrowsNoSuchElementException() {
 

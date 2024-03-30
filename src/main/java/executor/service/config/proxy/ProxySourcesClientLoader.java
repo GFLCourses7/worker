@@ -55,4 +55,9 @@ public class ProxySourcesClientLoader implements ProxySourcesClient {
 
         return proxy;
     }
+
+    @Override
+    public void addProxy(ProxyConfigHolder proxyConfigHolder) {
+        proxies.add(proxyConfigHolder);
+    }
 }
