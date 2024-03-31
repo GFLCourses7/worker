@@ -38,6 +38,9 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         // Configure Chrome options
         ChromeOptions options = configureChromeOptions(webDriverConfig);
 
+        // Linux bugfix
+        options.addArguments("--no-sandbox");
+
         // Set user agent if provided
         if (webDriverConfig.getUserAgent() != null) {
             options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
