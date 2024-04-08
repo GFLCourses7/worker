@@ -6,4 +6,5 @@ public interface ScenarioSourceListener {
     void execute();
     Scenario getScenario();
     void addScenario(Scenario scenario);
+    void update();
 }
