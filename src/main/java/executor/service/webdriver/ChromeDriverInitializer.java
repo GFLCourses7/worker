@@ -1,10 +1,10 @@
 package executor.service.webdriver;
 
 import executor.service.config.ChromeProxyConfigurer;
+import executor.service.config.PropertiesConfigHolder;
 import executor.service.config.proxy.ProxySourcesClient;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.WebDriverConfig;
-import executor.service.config.PropertiesConfigHolder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -19,57 +19,36 @@ import java.time.Duration;
 public class ChromeDriverInitializer implements WebDriverInitializer {
 
     private static final Logger LOGGER = LogManager.getLogger(ChromeDriverInitializer.class.getName());
+    private static final String WEBDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
 
     private final ChromeProxyConfigurer chromeProxyConfigurer;
     private final ProxySourcesClient proxySourcesClient;
+    private final PropertiesConfigHolder propertiesConfigHolder;
 
-    public ChromeDriverInitializer(ChromeProxyConfigurer chromeProxyConfigurer, ProxySourcesClient proxySourcesClient) {
+    public ChromeDriverInitializer(ChromeProxyConfigurer chromeProxyConfigurer,
+                                   ProxySourcesClient proxySourcesClient,
+                                   PropertiesConfigHolder propertiesConfigHolder) {
         this.chromeProxyConfigurer = chromeProxyConfigurer;
         this.proxySourcesClient = proxySourcesClient;
+        this.propertiesConfigHolder = propertiesConfigHolder;
     }
 
     @Override
     public WebDriver init() {
         LOGGER.info("Initializing WebDriver...");
 
-        WebDriverConfig webDriverConfig = loadWebDriverConfig();
-        ProxyConfigHolder proxyConfigHolder = loadProxyConfig();
-
-        // Configure Chrome options
+        WebDriverConfig webDriverConfig = propertiesConfigHolder.getWebDriverConfig();
         ChromeOptions options = configureChromeOptions(webDriverConfig);
 
-        // Set user agent if provided
-        if (webDriverConfig.getUserAgent() != null) {
-            options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
-        }
-
-        // Set a callback function to clear memory after use
-        // initially set to do nothing
-        Runnable clearMemory = () -> {};
-        // Set proxy with credentials, set proxy or skip
+        ProxyConfigHolder proxyConfigHolder = proxySourcesClient.getProxy();
+        Runnable clearMemory = () -> {
+        };
         if (proxyConfigHolder != null) {
-
-            if (proxyHasNetwork(proxyConfigHolder) && proxyHasCredentials(proxyConfigHolder)) {
-
-                try {
-                    clearMemory = chromeProxyConfigurer.configureProxy(options, proxyConfigHolder);
-                } catch (IOException e) {
-                    LOGGER.error(e);
-                }
-
-            } else if (proxyHasNetwork(proxyConfigHolder)) {
-
-                options.addArguments(String.format("--proxy-server=%s:%s",
-                        proxyConfigHolder.getProxyNetworkConfig().getHostname(),
-                        proxyConfigHolder.getProxyNetworkConfig().getPort()
-                ));
-            }
+            LOGGER.info("Configuring proxy...");
+            clearMemory = configureProxy(options, proxyConfigHolder);
         }
 
-        // Initialize ChromeDriver
         ChromeDriver driver = createChromeDriver(options);
-
-        // Configure timeouts
         configureTimeouts(driver, webDriverConfig);
 
         // Clear memory after driver has been initialized
@@ -80,57 +59,62 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         return driver;
     }
 
-    protected WebDriverConfig loadWebDriverConfig() {
-        return PropertiesConfigHolder.loadConfigFromFile();
-    }
-
-    protected ProxyConfigHolder loadProxyConfig() {
-        return proxySourcesClient.getProxy();
-    }
-
-    protected ChromeOptions configureChromeOptions(WebDriverConfig webDriverConfig) {
+    private ChromeOptions configureChromeOptions(WebDriverConfig webDriverConfig) {
         ChromeOptions options = new ChromeOptions();
-        System.setProperty("webdriver.chrome.driver", webDriverConfig.getWebDriverExecutable());
+        System.setProperty(WEBDRIVER_PROPERTY_NAME, webDriverConfig.getWebDriverExecutable());
 
         if (webDriverConfig.getUserAgent() != null) {
             options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
         }
-
         return options;
     }
 
-    protected ChromeDriver createChromeDriver(ChromeOptions options) {
+    private Runnable configureProxy(ChromeOptions options, ProxyConfigHolder proxyConfigHolder) {
+        if (proxyConfigHolder == null) {
+            return null;
+        }
+
+        if (proxyHasNetwork(proxyConfigHolder)) {
+            LOGGER.info("Using proxy: \"{}:{}\"", proxyConfigHolder.getProxyNetworkConfig().getHostname(),
+                    proxyConfigHolder.getProxyNetworkConfig().getPort());
+
+            if (proxyHasCredentials(proxyConfigHolder)) {
+                try {
+                    return chromeProxyConfigurer.configureProxy(options, proxyConfigHolder);
+                } catch (IOException e) {
+                    LOGGER.error("Error configuring proxy: {}", e.getMessage());
+                }
+            } else {
+                options.addArguments(String.format("--proxy-server=%s:%s",
+                        proxyConfigHolder.getProxyNetworkConfig().getHostname(),
+                        proxyConfigHolder.getProxyNetworkConfig().getPort()));
+            }
+        }
+
+        return null;
+    }
+
+
+    private ChromeDriver createChromeDriver(ChromeOptions options) {
         return new ChromeDriver(options);
     }
 
-    protected void configureTimeouts(WebDriver driver, WebDriverConfig webDriverConfig) {
+    private void configureTimeouts(WebDriver driver, WebDriverConfig webDriverConfig) {
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(webDriverConfig.getImplicitlyWait()));
         driver.manage().timeouts().pageLoadTimeout(Duration.ofMillis(webDriverConfig.getPageLoadTimeout()));
     }
 
-
     private boolean proxyHasNetwork(ProxyConfigHolder proxyConfigHolder) {
-
-        if (proxyConfigHolder == null)
-            return false;
-
-
-        if (proxyConfigHolder.getProxyNetworkConfig() == null)
-            return false;
-
-        return proxyConfigHolder.getProxyNetworkConfig().getHostname() != null
-                && proxyConfigHolder.getProxyNetworkConfig().getPort() != null;
+        return proxyConfigHolder != null &&
+                proxyConfigHolder.getProxyNetworkConfig() != null &&
+                proxyConfigHolder.getProxyNetworkConfig().getHostname() != null &&
+                proxyConfigHolder.getProxyNetworkConfig().getPort() != null;
     }
 
     private boolean proxyHasCredentials(ProxyConfigHolder proxyConfigHolder) {
-
-        if (proxyConfigHolder == null)
-            return false;
-
-        if (proxyConfigHolder.getProxyCredentials() == null)
-            return false;
-
-        return proxyConfigHolder.getProxyCredentials().getUsername() != null
-                && proxyConfigHolder.getProxyCredentials().getPassword() != null;
+        return proxyConfigHolder != null &&
+                proxyConfigHolder.getProxyCredentials() != null &&
+                proxyConfigHolder.getProxyCredentials().getUsername() != null &&
+                proxyConfigHolder.getProxyCredentials().getPassword() != null;
     }
 }

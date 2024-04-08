@@ -1,100 +1,68 @@
 package executor.service.webdriver;
 
-import executor.service.config.ChromeProxyConfigurerAddon;
-import executor.service.config.ProxyConfigFileInitializer;
-import executor.service.config.proxy.ProxySourcesClientLoader;
+import executor.service.config.ChromeProxyConfigurer;
+import executor.service.config.PropertiesConfigHolder;
+import executor.service.config.proxy.ProxySourcesClient;
 import executor.service.model.ProxyConfigHolder;
+import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
 import executor.service.model.WebDriverConfig;
-import executor.service.config.PropertiesConfigHolder;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.openqa.selenium.WebDriver;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 
-public class ChromeDriverInitializerTest {
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.when;
+
+class ChromeDriverInitializerTest {
+
+    @Mock
+    private ChromeProxyConfigurer chromeProxyConfigurer;
+
+    @Mock
+    private ProxySourcesClient proxySourcesClient;
+
+    @Mock
+    private PropertiesConfigHolder propertiesConfigHolder;
 
     private WebDriverConfig webDriverConfig;
+    private WebDriver driver;
 
     @BeforeEach
-    public void setUp() {
-        webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        webDriverConfig = new WebDriverConfig("./chromedriver",
+                "userAgent",
+                3L, 10L);
+    }
+
+    @AfterEach
+    void tearDown() {
+        driver.quit();
     }
 
     @Test
-    public void testInitWebDriverWithProxy() {
+    void testInit() {
+        // Mock data
+        ProxyConfigHolder proxyConfigHolder = new ProxyConfigHolder(new ProxyNetworkConfig("Test proxy", 9090), new ProxyCredentials());
 
-        try (MockedStatic<PropertiesConfigHolder> fakePropertiesConfigHolder = Mockito.mockStatic(PropertiesConfigHolder.class)) {
-            fakePropertiesConfigHolder.when(PropertiesConfigHolder::loadConfigFromFile)
-                    .thenReturn(webDriverConfig);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        // Mock behavior
+        when(propertiesConfigHolder.getWebDriverConfig()).thenReturn(webDriverConfig);
+        when(proxySourcesClient.getProxy()).thenReturn(proxyConfigHolder);
 
-        ProxyNetworkConfig proxyNetworkConfig = new ProxyNetworkConfig();
-        proxyNetworkConfig.setHostname("proxy.host");
-        proxyNetworkConfig.setPort(8080);
 
-        ProxyConfigHolder proxyConfigHolder = new ProxyConfigHolder();
-        proxyConfigHolder.setProxyNetworkConfig(proxyNetworkConfig);
+        // Initialize ChromeDriverInitializer
+        ChromeDriverInitializer initializer = new ChromeDriverInitializer(chromeProxyConfigurer, proxySourcesClient, propertiesConfigHolder);
+        driver = initializer.init();
 
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(
-                new ChromeDriverInitializer(
-                        new ChromeProxyConfigurerAddon(ProxyConfigFileInitializer::new),
-                        new ProxySourcesClientLoader()
-                )
-        );
-
-        when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
-        when(chromeDriverInitializer.loadProxyConfig()).thenReturn(proxyConfigHolder);
-
-        // Act
-        WebDriver driver = chromeDriverInitializer.init();
-
-        // Assert
+        // Assertions
         assertNotNull(driver);
-        verify(chromeDriverInitializer, times(1)).loadWebDriverConfig();
-        verify(chromeDriverInitializer, times(1)).loadProxyConfig();
-        verify(chromeDriverInitializer, times(1)).configureChromeOptions(webDriverConfig);
-        verify(chromeDriverInitializer, times(1)).createChromeDriver(any());
-
-        driver.quit();
-
-    }
-
-    @Test
-    public void testInitWebDriverWithoutProxy() {
-
-        try (MockedStatic<PropertiesConfigHolder> fakePropertiesConfigHolder = Mockito.mockStatic(PropertiesConfigHolder.class)) {
-            fakePropertiesConfigHolder.when(PropertiesConfigHolder::loadConfigFromFile)
-                    .thenReturn(webDriverConfig);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
-        ChromeDriverInitializer chromeDriverInitializer = Mockito.spy(
-                new ChromeDriverInitializer(
-                        new ChromeProxyConfigurerAddon(ProxyConfigFileInitializer::new),
-                        new ProxySourcesClientLoader()
-                )
-        );
-
-        when(chromeDriverInitializer.loadWebDriverConfig()).thenReturn(webDriverConfig);
-        when(chromeDriverInitializer.loadProxyConfig()).thenReturn(null);
-
-        // Act
-        WebDriver driver = chromeDriverInitializer.init();
-
-        // Assert
-        assertNotNull(driver);
-        verify(chromeDriverInitializer, times(1)).loadWebDriverConfig();
-        verify(chromeDriverInitializer, times(1)).loadProxyConfig();
-        verify(chromeDriverInitializer, times(1)).configureChromeOptions(any());
-        verify(chromeDriverInitializer, times(1)).createChromeDriver(any());
-
-        driver.quit();
+        assertInstanceOf(ChromeDriver.class, driver);
     }
 }

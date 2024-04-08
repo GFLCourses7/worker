@@ -14,29 +14,31 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ParallelFlowExecutorService {
+    private static final Logger LOGGER = LogManager.getLogger(ParallelFlowExecutorService.class.getName());
 
-    private final ThreadPoolConfig threadPoolConfig;
     private ThreadPoolExecutor threadPoolExecutor;
     private final ScenarioSourceListener scenarioSourceListener;
     private final ExecutionServiceImpl executionService;
     private final WebDriverInitializer webDriverInitializer;
     private final ScenarioExecutor scenarioExecutor;
-    private static final Logger LOGGER = LogManager.getLogger(ParallelFlowExecutorService.class.getName());
+    private final PropertiesConfigHolder propertiesConfigHolder;
 
     public ParallelFlowExecutorService(ScenarioSourceListener scenarioSourceListener,
                                        ExecutionServiceImpl executionService,
                                        WebDriverInitializer webDriverInitializer,
-                                       ScenarioExecutor scenarioExecutor
+                                       ScenarioExecutor scenarioExecutor,
+                                       PropertiesConfigHolder propertiesConfigHolder
     ) {
         this.scenarioSourceListener = scenarioSourceListener;
         this.executionService = executionService;
         this.webDriverInitializer = webDriverInitializer;
         this.scenarioExecutor = scenarioExecutor;
-        this.threadPoolConfig = PropertiesConfigHolder.loadThreadConfigFromFile();
+        this.propertiesConfigHolder = propertiesConfigHolder;
         this.threadPoolExecutor = initExecutor();
 
         // Start threads after class initialization
@@ -45,15 +47,16 @@ public class ParallelFlowExecutorService {
 
     ThreadPoolExecutor initExecutor() {
         LinkedBlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue<>();
+        ThreadPoolConfig threadPoolConfig = propertiesConfigHolder.getThreadPoolConfig();
         ThreadPoolExecutor newThreadPoolExecutor = new ThreadPoolExecutor(threadPoolConfig.getCorePoolSize(),
-                PropertiesConfigHolder.loadMaxPoolSizeFromFile(),
+                propertiesConfigHolder.getMaxPoolSize(),
                 threadPoolConfig.getKeepAliveTime(),
                 TimeUnit.MILLISECONDS,
                 blockingQueue);
 
         LOGGER.info("Create new ThreadPoolExecutor with parameters: " +
                 "CorePoolSize - " + threadPoolConfig.getCorePoolSize() +
-                " MaxPoolSize - " + PropertiesConfigHolder.loadMaxPoolSizeFromFile() +
+                " MaxPoolSize - " + propertiesConfigHolder.getMaxPoolSize() +
                 " KeepAliveTime - " + threadPoolConfig.getKeepAliveTime() +
                 " milliseconds");
         return newThreadPoolExecutor;
@@ -71,13 +74,20 @@ public class ParallelFlowExecutorService {
                 // If executionService execute throws an error
                 // try/catch will catch it and won't allow thread
                 // to hang in an error state
+                WebDriver webDriver = null;
+
                 try {
-                    executionService.execute(webDriverInitializer.init(),
+                    webDriver = webDriverInitializer.init();
+                    executionService.execute(webDriver,
                             scenario,
                             scenarioExecutor
                     );
                 } catch (Exception e) {
                     LOGGER.error(e);
+                } finally {
+                    if (webDriver != null) {
+                        webDriver.quit();
+                    }
                 }
             });
 

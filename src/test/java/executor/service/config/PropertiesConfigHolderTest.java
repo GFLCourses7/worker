@@ -2,15 +2,22 @@ package executor.service.config;
 
 import executor.service.model.ThreadPoolConfig;
 import executor.service.model.WebDriverConfig;
-import executor.service.config.PropertiesConfigHolder;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public class PropertyConfigHolderTest {
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest
+public class PropertiesConfigHolderTest {
+
+    @Autowired
+    private PropertiesConfigHolder configHolder;
 
     @Test
-    void testLoadConfigFromFile() {
-        WebDriverConfig webDriverConfig = PropertiesConfigHolder.loadConfigFromFile();
+    void testGetWebDriverConfig() {
+        WebDriverConfig webDriverConfig = configHolder.getWebDriverConfig();
 
         assertNotNull(webDriverConfig);
         assertNotNull(webDriverConfig.getWebDriverExecutable());
@@ -20,8 +27,8 @@ public class PropertyConfigHolderTest {
     }
 
     @Test
-    public void testLoadThreadConfigFromFile() {
-        ThreadPoolConfig threadPoolConfig = PropertiesConfigHolder.loadThreadConfigFromFile();
+    public void testGetThreadPoolConfig() {
+        ThreadPoolConfig threadPoolConfig = configHolder.getThreadPoolConfig();
 
         assertNotNull(threadPoolConfig);
         assertNotEquals(0, threadPoolConfig.getCorePoolSize());
@@ -29,10 +36,9 @@ public class PropertyConfigHolderTest {
     }
 
     @Test
-    public void loadMaxPoolSizeFromFile() {
-        int maxPoolSize = PropertiesConfigHolder.loadMaxPoolSizeFromFile();
+    public void testGetMaxPoolSize() {
+        int maxPoolSize = configHolder.getMaxPoolSize();
 
         assertNotEquals(0, maxPoolSize);
-
     }
 }
