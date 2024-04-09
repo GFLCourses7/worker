@@ -45,4 +45,12 @@ public class ProxyConfigHolder {
     public int hashCode() {
         return Objects.hash(proxyNetworkConfig, proxyCredentials);
     }
+
+    @Override
+    public String toString() {
+        return "ProxyConfigHolder{" +
+                "proxyNetworkConfig=" + proxyNetworkConfig +
+                ", proxyCredentials=" + proxyCredentials +
+                '}';
+    }
 }

@@ -43,4 +43,11 @@ public class ProxyNetworkConfig {
         return Objects.hash(hostname, port);
     }
 
+    @Override
+    public String toString() {
+        return "ProxyNetworkConfig{" +
+                "hostname='" + hostname + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }

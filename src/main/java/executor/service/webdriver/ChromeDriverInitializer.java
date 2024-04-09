@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -20,13 +21,12 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
 
     private static final Logger LOGGER = LogManager.getLogger(ChromeDriverInitializer.class.getName());
     private static final String WEBDRIVER_PROPERTY_NAME = "webdriver.chrome.driver";
-
     private final ChromeProxyConfigurer chromeProxyConfigurer;
     private final ProxySourcesClient proxySourcesClient;
     private final PropertiesConfigHolder propertiesConfigHolder;
 
     public ChromeDriverInitializer(ChromeProxyConfigurer chromeProxyConfigurer,
-                                   ProxySourcesClient proxySourcesClient,
+                                   @Qualifier("ProxySourcesClientOkHttp") ProxySourcesClient proxySourcesClient,
                                    PropertiesConfigHolder propertiesConfigHolder) {
         this.chromeProxyConfigurer = chromeProxyConfigurer;
         this.proxySourcesClient = proxySourcesClient;
