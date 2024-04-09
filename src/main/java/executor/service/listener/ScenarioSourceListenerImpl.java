@@ -13,7 +13,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
     private static final String SCENARIOS_JSON = "scenarios.json";
-    private LinkedBlockingQueue<Scenario> scenarios = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<Scenario> scenarios = new LinkedBlockingQueue<>();
     private final ConfigReader configReader;
 
     public ScenarioSourceListenerImpl(ConfigReader configReader) {
@@ -23,31 +23,11 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     @Override
     public Scenario getScenario() {
-
-        Scenario scenario = null;
-        while (scenario == null) {
-            try {
-                scenario = scenarios.take();
-            } catch (InterruptedException e) {
-                logger.error("Interrupted while waiting for scenario", e);
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        return scenario;
+        return scenarios.poll();
     }
 
     @Override
     public void addScenario(Scenario scenario) {
         scenarios.add(scenario);
     }
-
-    public LinkedBlockingQueue<Scenario> getScenarios() {
-        return scenarios;
-    }
-
-    public void setScenarios(LinkedBlockingQueue<Scenario> scenarios) {
-        this.scenarios = scenarios;
-    }
-
 }
