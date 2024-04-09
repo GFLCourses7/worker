@@ -48,7 +48,7 @@ public class ProxyControllerTest {
         // Mocking the behavior of proxySourcesClientLoader.addProxy(proxyConfigHolder)
         doNothing().when(proxySourcesClientLoader).addProxy(any(ProxyConfigHolder.class));
 
-        mockMvc.perform(post("/proxy")
+        mockMvc.perform(post("/add-proxy")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(proxyJson))
                 .andExpect(status().isOk());
