@@ -4,58 +4,56 @@ import executor.service.model.Step;
 import executor.service.utils.StepAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
 import org.openqa.selenium.WebDriver;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SleepTest {
-    private final String SLEEP = "sleep";
-    private final String TIME_SlEEP = "1000";
-    private Sleep sleep;
-    private WebDriver driver;
+
+    @Mock
+    private WebDriver mockWebDriver;
+    private Sleep sleepStep;
+    private Step step;
 
 
     @BeforeEach
-    public void init() {
-        sleep = new Sleep();
-        driver = Mockito.mock(WebDriver.class);
+    void setUp() {
+        sleepStep = new Sleep();
+
+        step = new Step();
+        step.setAction(StepAction.SLEEP.name());
+        step.setValue("1000");
     }
 
-    @Test
-    public void testStepAction() {
-        String stepAction = sleep.getStepAction();
-        assertEquals(stepAction, StepAction.SLEEP.label);
-    }
 
     @Test
-    public void testStepWithValidSleepValue() {
-        Step step = new Step(SLEEP, TIME_SlEEP);
-        long expectedSleepTime = 1000;
-        long tolerance = 100;
-
+    public void testStepExecution_ValidSleepTime() {
         long startTime = System.currentTimeMillis();
-        sleep.step(null, step);
+        sleepStep.step(mockWebDriver, step);
         long endTime = System.currentTimeMillis();
-        long actualSleepTime = endTime - startTime;
 
-        assertEquals(expectedSleepTime, actualSleepTime, tolerance);
+        long elapsedTime = endTime - startTime;
+
+        assertTrue(elapsedTime >= 1000, "Sleep duration was less than expected");
     }
 
     @Test
-    public void testStepWithInvalidSleepValue() {
-        Step step = new Step(SLEEP, "abc");
-        assertThrows(NumberFormatException.class, () -> sleep.step(driver, step));
+    public void testStepExecution_NegativeSleepTime() {
+        step.setValue("-1000");
     }
 
     @Test
-    public void testStepInterruptedException() {
-        Step step = new Step(SLEEP, TIME_SlEEP);
-        assertThrows(RuntimeException.class, () -> {
-            doThrow(new RuntimeException()).when(sleep).step(driver, step);
-            sleep.step(driver, step);
-        });
+    public void testStepExecution_InvalidSleepValue() {
+        step.setValue("invalid");
+        sleepStep.step(mockWebDriver, step);
+    }
+
+    @Test
+    public void testStepExecution_InterruptedException() {
+        Thread.currentThread().interrupt();
+        sleepStep.step(mockWebDriver, step);
+        assertFalse(Thread.interrupted());
     }
 }

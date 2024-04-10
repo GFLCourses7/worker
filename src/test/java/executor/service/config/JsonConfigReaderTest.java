@@ -1,60 +1,127 @@
 package executor.service.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import executor.service.config.JsonConfigReader;
 import executor.service.exception.ConfigFileNotFoundException;
+import executor.service.utils.configreader.JsonConfigReader;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class JsonConfigReaderTest {
 
-    @Test
-    void testReadFile_Success() {
-        String json = "[{\"name\":\"John\"}]";
+    private JsonConfigReader jsonConfigReader;
 
-        List<Person> persons = JsonConfigReader.readFile(json.getBytes(), Person.class);
+    @Mock
+    private ResourceLoader resourceLoader;
 
-        assertEquals("John", persons.get(0).getName());
+    @BeforeEach
+    public void setup() {
+        MockitoAnnotations.initMocks(this);
+        jsonConfigReader = new JsonConfigReader(resourceLoader);
     }
 
     @Test
-    void testReadFileIgnoreUnknownProperties() throws IOException {
-        String json = "[{\"name\":\"John\",\"age\":30}]";
+    public void testReadFileValidJson() throws IOException {
+        String jsonContent = "[{\"id\": 1, \"name\": \"John\"}, {\"id\": 2, \"name\": \"Jane\"}]";
+        Resource resource = mock(Resource.class);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(jsonContent.getBytes()));
 
-        List<Person> persons = JsonConfigReader.readFile(json.getBytes(), Person.class);
+        when(resourceLoader.getResource(anyString())).thenReturn(resource);
 
+        List<Person> persons = jsonConfigReader.readFile("classpath:test.json", Person.class);
+
+        assertEquals(2, persons.size());
         assertEquals("John", persons.get(0).getName());
+        assertEquals("Jane", persons.get(1).getName());
+    }
+
+    @Test
+    public void testReadFileInvalidJson() throws IOException {
+        String invalidJsonContent = "invalid JSON content";
+        Resource resource = mock(Resource.class);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(invalidJsonContent.getBytes()));
+
+        when(resourceLoader.getResource(anyString())).thenReturn(resource);
+
+        assertThrows(ConfigFileNotFoundException.class, () -> jsonConfigReader.readFile("classpath:test.json", Person.class));
+    }
+
+    @Test
+    public void testReadFileInvalidJsonWithNullProperty() throws IOException {
+        String jsonContent = "[{\"id\": 1, \"name\": \"John\"}, {\"id\": 2, \"name\": null}]";
+        Resource resource = mock(Resource.class);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(jsonContent.getBytes()));
+
+        when(resourceLoader.getResource(anyString())).thenReturn(resource);
+
+        List<Person> persons = jsonConfigReader.readFile("classpath:test.json", Person.class);
+
+        assertEquals(2, persons.size());
+        assertEquals(1, persons.get(0).getId());
+        assertEquals("John", persons.get(0).getName());
+        assertEquals(2, persons.get(1).getId());
+        assertNull(persons.get(1).getName());
+    }
+
+    @Test
+    public void testReadFileWithUnknownProperty() throws IOException {
+        String jsonContent = "[{\"id\": 1, \"name\": \"John\"}, {\"id\": 2, \"age\": 31}]";
+        Resource resource = mock(Resource.class);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(jsonContent.getBytes()));
+
+        when(resourceLoader.getResource(anyString())).thenReturn(resource);
+
+        List<Person> persons = jsonConfigReader.readFile("classpath:test.json", Person.class);
+
+        assertEquals(2, persons.size());
+        assertEquals(1, persons.get(0).getId());
+        assertEquals("John", persons.get(0).getName());
+        assertEquals(2, persons.get(1).getId());
+        assertNull(persons.get(1).getName());
+    }
+
+    @Test
+    public void testReadFileWithEmptyJson() throws IOException {
+        String jsonContent = "[]";
+        Resource resource = mock(Resource.class);
+        when(resource.getInputStream()).thenReturn(new ByteArrayInputStream(jsonContent.getBytes()));
+
+        when(resourceLoader.getResource(anyString())).thenReturn(resource);
+
+        List<Person> persons = jsonConfigReader.readFile("classpath:test.json", Person.class);
+
+        assertNotNull(persons);
+        assertEquals(0, persons.size());
     }
 
 
-    void testReadFile_IOException() {
-
-        // Method doesn't load files anymore
-
-//        assertThrows(ConfigFileNotFoundException.class,
-//                () -> JsonConfigReader.readFile("fakeFile", Person.class));
-    }
-
-    // Helper method to create a temporary JSON file
-    private File createTempJsonFile(String json) throws IOException {
-        File tempFile = File.createTempFile("test-config", ".json");
-        tempFile.deleteOnExit(); // delete the file when the JVM exits
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.writeValue(tempFile, objectMapper.readTree(json));
-        return tempFile;
-    }
-
-    private static class Person {
+    public static class Person {
+        private int id;
         private String name;
 
         public Person() {
+        }
+
+        public Person(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
         }
 
         public String getName() {
@@ -65,9 +132,4 @@ public class JsonConfigReaderTest {
             this.name = name;
         }
     }
-
 }
-
-
-
-
