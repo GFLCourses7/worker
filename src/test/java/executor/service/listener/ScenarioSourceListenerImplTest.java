@@ -35,7 +35,7 @@ public class ScenarioSourceListenerImplTest {
 
         when(configReader.readFile(anyString(), eq(Scenario.class))).thenReturn(scenarios);
 
-        scenarioSourceListener = new ScenarioSourceListenerImpl(configReader);
+        scenarioSourceListener = new ScenarioSourceListenerImpl();
 
         Scenario result = scenarioSourceListener.getScenario();
 
@@ -46,7 +46,7 @@ public class ScenarioSourceListenerImplTest {
     public void testGetScenarioIsBlockedWithNoScenariosAvailable() {
         when(configReader.readFile(anyString(), eq(Scenario.class))).thenReturn(new ArrayList<>());
 
-        scenarioSourceListener = new ScenarioSourceListenerImpl(configReader);
+        scenarioSourceListener = new ScenarioSourceListenerImpl();
 //        Scenario result = scenarioSourceListener.getScenario();
 //
 //        assertNull(result);
@@ -69,7 +69,7 @@ public class ScenarioSourceListenerImplTest {
     public void testAddScenario() {
         Scenario scenario = new Scenario();
 
-        scenarioSourceListener = new ScenarioSourceListenerImpl(configReader);
+        scenarioSourceListener = new ScenarioSourceListenerImpl();
         scenarioSourceListener.addScenario(scenario);
 
         Scenario actual = scenarioSourceListener.getScenario();

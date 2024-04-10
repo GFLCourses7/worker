@@ -73,13 +73,6 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     public LinkedBlockingQueue<Scenario> getScenarios() {
         return scenarios;
-        //        scenarios.add(scenario);
-        try {
-            scenarios.put(scenario);
-        } catch (InterruptedException e) {
-            logger.error("Interrupted while putting the scenario", e);
-            Thread.currentThread().interrupt();
-        }
     }
 
     public void setScenarios(LinkedBlockingQueue<Scenario> scenarios) {
