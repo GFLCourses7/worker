@@ -23,11 +23,27 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     @Override
     public Scenario getScenario() {
-        return scenarios.poll();
+        Scenario scenario = null;
+        while (scenario == null) {
+            try {
+                scenario = scenarios.take();
+            } catch (InterruptedException e) {
+                logger.error("Interrupted while waiting for scenario", e);
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        return scenario;
     }
 
     @Override
     public void addScenario(Scenario scenario) {
-        scenarios.add(scenario);
+        //        scenarios.add(scenario);
+        try {
+            scenarios.put(scenario);
+        } catch (InterruptedException e) {
+            logger.error("Interrupted while putting the scenario", e);
+            Thread.currentThread().interrupt();
+        }
     }
 }

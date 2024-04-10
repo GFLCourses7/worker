@@ -9,9 +9,9 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class ScenarioSourceListenerImplTest {
@@ -43,13 +43,26 @@ public class ScenarioSourceListenerImplTest {
     }
 
     @Test
-    public void testGetScenario_WithNoScenariosAvailable() {
+    public void testGetScenarioIsBlockedWithNoScenariosAvailable() {
         when(configReader.readFile(anyString(), eq(Scenario.class))).thenReturn(new ArrayList<>());
 
         scenarioSourceListener = new ScenarioSourceListenerImpl(configReader);
-        Scenario result = scenarioSourceListener.getScenario();
+//        Scenario result = scenarioSourceListener.getScenario();
+//
+//        assertNull(result);
 
-        assertNull(result);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Scenario> future = executor.submit(() -> scenarioSourceListener.getScenario());
+
+        try {
+            Scenario result = future.get(5, TimeUnit.SECONDS);
+            assertNull(result);
+        } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            System.out.println("Queue is empty, thread is blocked.");
+            assertInstanceOf(TimeoutException.class, e);
+        } finally {
+            executor.shutdown();
+        }
     }
 
     @Test
