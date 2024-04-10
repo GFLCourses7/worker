@@ -1,21 +1,19 @@
 package executor.service.executor.parallelflowexecution;
 
-import executor.service.executor.executionservice.ExecutionServiceImpl;
-import executor.service.listener.ScenarioSourceListener;
-import executor.service.model.Scenario;
-import executor.service.model.ThreadPoolConfig;
-import executor.service.executor.scenarioexecutor.ScenarioExecutor;
 import executor.service.config.PropertiesConfigHolder;
+import executor.service.executor.executionservice.ExecutionServiceImpl;
+import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.listener.ScenarioSourceListener;
+import executor.service.model.ThreadPoolConfig;
 import executor.service.webdriver.WebDriverInitializer;
-
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ParallelFlowExecutorService {
@@ -67,9 +65,6 @@ public class ParallelFlowExecutorService {
         LOGGER.info("Start executing scenarios in threads ");
 
         while (!Thread.interrupted()) {
-
-            Scenario scenario = scenarioSourceListener.getScenario();
-
             threadPoolExecutor.execute(() -> {
                 // If executionService execute throws an error
                 // try/catch will catch it and won't allow thread
@@ -79,7 +74,7 @@ public class ParallelFlowExecutorService {
                 try {
                     webDriver = webDriverInitializer.init();
                     executionService.execute(webDriver,
-                            scenario,
+                            scenarioSourceListener,
                             scenarioExecutor
                     );
                 } catch (Exception e) {
