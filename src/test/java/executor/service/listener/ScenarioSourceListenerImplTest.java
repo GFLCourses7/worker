@@ -3,6 +3,7 @@ package executor.service.listener;
 import executor.service.model.Scenario;
 import executor.service.utils.configreader.ConfigReader;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class ScenarioSourceListenerImplTest {
 
@@ -33,9 +33,11 @@ public class ScenarioSourceListenerImplTest {
         List<Scenario> scenarios = new ArrayList<>();
         scenarios.add(scenario);
 
-        when(configReader.readFile(anyString(), eq(Scenario.class))).thenReturn(scenarios);
+        LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>();
+        scenarioQueue.add(scenario);
 
         scenarioSourceListener = new ScenarioSourceListenerImpl();
+        scenarioSourceListener.setScenarios(scenarioQueue);
 
         Scenario result = scenarioSourceListener.getScenario();
 
@@ -44,12 +46,7 @@ public class ScenarioSourceListenerImplTest {
 
     @Test
     public void testGetScenarioIsBlockedWithNoScenariosAvailable() {
-        when(configReader.readFile(anyString(), eq(Scenario.class))).thenReturn(new ArrayList<>());
-
         scenarioSourceListener = new ScenarioSourceListenerImpl();
-//        Scenario result = scenarioSourceListener.getScenario();
-//
-//        assertNull(result);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Scenario> future = executor.submit(() -> scenarioSourceListener.getScenario());
