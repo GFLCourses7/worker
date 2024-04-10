@@ -1,80 +1,120 @@
 [
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
   },
   {
-    "proxyNetworkConfig": {
-      "hostname": "193.41.68.93",
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
       "port": 50100
     },
-    "proxyCredentials": {
+    "proxyCredentials":
+    {
+      "username": "denyslviv2013",
+      "password": "REtsLkZs2I"
+    }
+  },
+  {
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
+      "port": 50100
+    },
+    "proxyCredentials":
+    {
+      "username": "denyslviv2013",
+      "password": "REtsLkZs2I"
+    }
+  },
+  {
+    "proxyNetworkConfig":
+    {
+      "hostname": "138.36.95.102",
+      "port": 50100
+    },
+    "proxyCredentials":
+    {
       "username": "denyslviv2013",
       "password": "REtsLkZs2I"
     }
