@@ -14,6 +14,9 @@ import org.springframework.util.FileCopyUtils;
 import java.io.IOException;
 import java.util.List;
 
+//TODO Remove this class. Use objectMapper bean instead.
+
+
 @Component
 public class JsonConfigReader implements ConfigReader {
     private static final Logger LOGGER = LogManager.getLogger(JsonConfigReader.class.getName());

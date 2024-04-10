@@ -1,9 +1,8 @@
 package executor.service.listener;
 
 import executor.service.model.Scenario;
-import executor.service.utils.configreader.ConfigReader;
+import executor.service.okhttp.OkHttpService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -17,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ScenarioSourceListenerImplTest {
 
     @Mock
-    private ConfigReader configReader;
+    private OkHttpService okHttpService;
 
     private ScenarioSourceListenerImpl scenarioSourceListener;
 
@@ -36,7 +35,7 @@ public class ScenarioSourceListenerImplTest {
         LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>();
         scenarioQueue.add(scenario);
 
-        scenarioSourceListener = new ScenarioSourceListenerImpl();
+        scenarioSourceListener = new ScenarioSourceListenerImpl(okHttpService);
         scenarioSourceListener.setScenarios(scenarioQueue);
 
         Scenario result = scenarioSourceListener.getScenario();
@@ -46,7 +45,7 @@ public class ScenarioSourceListenerImplTest {
 
     @Test
     public void testGetScenarioIsBlockedWithNoScenariosAvailable() {
-        scenarioSourceListener = new ScenarioSourceListenerImpl();
+        scenarioSourceListener = new ScenarioSourceListenerImpl(okHttpService);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Scenario> future = executor.submit(() -> scenarioSourceListener.getScenario());
@@ -66,7 +65,7 @@ public class ScenarioSourceListenerImplTest {
     public void testAddScenario() {
         Scenario scenario = new Scenario();
 
-        scenarioSourceListener = new ScenarioSourceListenerImpl();
+        scenarioSourceListener = new ScenarioSourceListenerImpl(okHttpService);
         scenarioSourceListener.addScenario(scenario);
 
         Scenario actual = scenarioSourceListener.getScenario();
