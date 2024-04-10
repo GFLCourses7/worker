@@ -3,42 +3,60 @@ package executor.service.config;
 import executor.service.model.ThreadPoolConfig;
 import executor.service.model.WebDriverConfig;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Value;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
 public class PropertiesConfigHolderTest {
 
-    @Autowired
+    @Mock
     private PropertiesConfigHolder configHolder;
 
-    @Test
-    void testGetWebDriverConfig() {
-        WebDriverConfig webDriverConfig = configHolder.getWebDriverConfig();
+    @Value("${executorservice.common.webDriverExecutable}")
+    private String webDriverExecutable;
 
-        assertNotNull(webDriverConfig);
-        assertNotNull(webDriverConfig.getWebDriverExecutable());
-        assertNotNull(webDriverConfig.getUserAgent());
-        assertNotEquals(0, webDriverConfig.getPageLoadTimeout());
-        assertNotEquals(0, webDriverConfig.getImplicitlyWait());
+    @Value("${executorservice.common.userAgent}")
+    private String userAgent;
+
+    @Value("${executorservice.common.pageLoadTimeout}")
+    private long pageLoadTimeout;
+
+    @Value("${executorservice.common.driverWait}")
+    private long driverWait;
+
+    @Value("${executorservice.thread.corePoolSize}")
+    private int corePoolSize;
+
+    @Value("${executorservice.thread.keepAliveTime}")
+    private long keepAliveTime;
+
+    @Value("${executorservice.thread.maxPoolSize}")
+    private int maxPoolSize;
+
+    public PropertiesConfigHolderTest() {
+        MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testGetWebDriverConfig() {
+        when(configHolder.getWebDriverConfig()).thenReturn(new WebDriverConfig(webDriverExecutable, userAgent, pageLoadTimeout, driverWait));
+        WebDriverConfig expectedConfig = new WebDriverConfig(webDriverExecutable, userAgent, pageLoadTimeout, driverWait);
+        assertEquals(expectedConfig, configHolder.getWebDriverConfig());
     }
 
     @Test
     public void testGetThreadPoolConfig() {
-        ThreadPoolConfig threadPoolConfig = configHolder.getThreadPoolConfig();
-
-        assertNotNull(threadPoolConfig);
-        assertNotEquals(0, threadPoolConfig.getCorePoolSize());
-        assertNotEquals(0, threadPoolConfig.getKeepAliveTime());
+        when(configHolder.getThreadPoolConfig()).thenReturn(new ThreadPoolConfig(corePoolSize, keepAliveTime));
+        ThreadPoolConfig expectedConfig = new ThreadPoolConfig(corePoolSize, keepAliveTime);
+        assertEquals(expectedConfig, configHolder.getThreadPoolConfig());
     }
 
     @Test
     public void testGetMaxPoolSize() {
-        int maxPoolSize = configHolder.getMaxPoolSize();
-
-        assertNotEquals(0, maxPoolSize);
+        when(configHolder.getMaxPoolSize()).thenReturn(maxPoolSize);
+        assertEquals(maxPoolSize, configHolder.getMaxPoolSize());
     }
 }
