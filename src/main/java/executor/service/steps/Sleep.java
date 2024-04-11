@@ -21,7 +21,7 @@ public class Sleep implements StepExecution{
         try {
             long sleep = Long.parseLong(step.getValue());
             TimeUnit.MILLISECONDS.sleep(sleep);
-        } catch (InterruptedException | NumberFormatException e) {
+        } catch (InterruptedException e) {
             LOGGER.error(e);
         }
     }

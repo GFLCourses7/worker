@@ -30,12 +30,6 @@ public class ResultClientService {
         this.port = port;
 
         setupObjectMapper();
-
-        try {
-            sendResult(new ScenarioWrapper(1L, "test_result"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private void setupObjectMapper() {
