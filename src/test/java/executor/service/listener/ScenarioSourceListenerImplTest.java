@@ -35,6 +35,7 @@ public class ScenarioSourceListenerImplTest {
         LinkedBlockingQueue<Scenario> scenarioQueue = new LinkedBlockingQueue<>();
         scenarioQueue.add(scenario);
 
+
         scenarioSourceListener = new ScenarioSourceListenerImpl(clientService);
         scenarioSourceListener.setScenarios(scenarioQueue);
 
@@ -64,6 +65,7 @@ public class ScenarioSourceListenerImplTest {
     @Test
     public void testAddScenario() {
         Scenario scenario = new Scenario();
+
 
         scenarioSourceListener = new ScenarioSourceListenerImpl(clientService);
         scenarioSourceListener.addScenario(scenario);
