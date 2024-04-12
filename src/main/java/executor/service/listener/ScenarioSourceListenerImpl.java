@@ -1,7 +1,7 @@
 package executor.service.listener;
 
 import executor.service.model.Scenario;
-import executor.service.okhttp.OkHttpService;
+import executor.service.okhttp.ClientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -12,12 +12,12 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     private static final Logger logger = LogManager.getLogger(ScenarioSourceListenerImpl.class);
-    private final OkHttpService okHttpService;
+    private final ClientService clientService;
     private LinkedBlockingQueue<Scenario> scenarios = new LinkedBlockingQueue<>();
 
 
-    public ScenarioSourceListenerImpl(OkHttpService okHttpService) {
-        this.okHttpService = okHttpService;
+    public ScenarioSourceListenerImpl(ClientService clientService) {
+        this.clientService = clientService;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     @Override
     public void notifyListener() {
-        scenarios.add(okHttpService.fetchScenario());
+        scenarios.add(clientService.fetchScenario());
     }
 
 

@@ -65,6 +65,15 @@ public class ParallelFlowExecutorService {
         LOGGER.info("Start executing scenarios in threads ");
 
         while (!Thread.interrupted()) {
+
+            while (threadPoolExecutor.getQueue().size() > 0) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             threadPoolExecutor.execute(() -> {
                 // If executionService execute throws an error
                 // try/catch will catch it and won't allow thread

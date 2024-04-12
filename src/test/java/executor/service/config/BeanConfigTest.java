@@ -1,4 +1,4 @@
-package executor.service.config.mapper;
+package executor.service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -9,10 +9,10 @@ import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ObjectMapperConfigTest {
+public class BeanConfigTest {
 
     @Test
-    public void testDisableFAIL_ON_UNKNOWN_PROPERTIES() throws IOException {
+    public void testObjectMapper() throws IOException {
 
         String string1 = "string-1";
         String string2 = "string-2";
@@ -28,17 +28,17 @@ public class ObjectMapperConfigTest {
                 }
                 """, string1, string2, integer3);
 
-        TestClass expected = new TestClass(
+        BeanConfigTest.TestClass expected = new BeanConfigTest.TestClass(
                 string1,
                 string2,
                 integer3
         );
 
-        ObjectMapper objectMapper = new ObjectMapperConfig().getObjectMapperBean();
+        ObjectMapper objectMapper = new BeanConfig().getObjectMapperBean();
 
-        ObjectMapperConfigTest.TestClass actual = objectMapper.readValue(
+        BeanConfigTest.TestClass actual = objectMapper.readValue(
                 expectedJson.getBytes(StandardCharsets.UTF_8),
-                ObjectMapperConfigTest.TestClass.class
+                BeanConfigTest.TestClass.class
         );
 
         assertEquals(expected, actual);
@@ -86,7 +86,7 @@ public class ObjectMapperConfigTest {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            TestClass testClass = (TestClass) o;
+            BeanConfigTest.TestClass testClass = (BeanConfigTest.TestClass) o;
             return Objects.equals(string1, testClass.string1) && Objects.equals(string2, testClass.string2) && Objects.equals(integer3, testClass.integer3);
         }
 
@@ -104,4 +104,5 @@ public class ObjectMapperConfigTest {
                     '}';
         }
     }
+
 }

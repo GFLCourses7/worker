@@ -3,6 +3,7 @@ package executor.service.config;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.squareup.okhttp.OkHttpClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfig {
 
     @Bean
-    ObjectMapper getObjectMapperBean() {
+    public ObjectMapper getObjectMapperBean() {
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -21,5 +22,11 @@ public class BeanConfig {
         mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
         return mapper;
+    }
+
+    @Bean
+    public OkHttpClient getOkHttpClientBean() {
+
+        return new OkHttpClient();
     }
 }

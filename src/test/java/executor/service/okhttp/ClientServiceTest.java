@@ -1,9 +1,9 @@
-package executor.service.service;
+package executor.service.okhttp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
-import executor.service.config.mapper.ObjectMapperConfig;
+import executor.service.config.BeanConfig;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.ProxyCredentials;
 import executor.service.model.ProxyNetworkConfig;
@@ -13,7 +13,12 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ProxyClientServiceTest {
+public class ClientServiceTest {
+
+    @Test
+    public void testFetchScenario() {
+        // To do ...
+    }
 
     @Test
     public void testGetProxy() throws IOException {
@@ -47,15 +52,14 @@ public class ProxyClientServiceTest {
                 new ProxyCredentials(proxyUsername, proxyPassword)
         );
 
-        ObjectMapperConfig objectMapperConfig = new ObjectMapperConfig();
-        ObjectMapper objectMapper = objectMapperConfig.getObjectMapperBean();
+        BeanConfig beanConfig = new BeanConfig();
 
-
-        ProxyClientService proxyClientService = new ProxyClientService(
+        ClientService proxyClientService = new ClientService(
                 "http://" + server.getHostName(),
                 server.getPort(),
-                objectMapper
-                );
+                beanConfig.getOkHttpClientBean(),
+                beanConfig.getObjectMapperBean()
+        );
 
         ProxyConfigHolder actual = proxyClientService.getProxy();
 

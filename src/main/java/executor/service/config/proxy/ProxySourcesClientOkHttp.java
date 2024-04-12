@@ -1,7 +1,7 @@
 package executor.service.config.proxy;
 
 import executor.service.model.ProxyConfigHolder;
-import executor.service.service.ProxyClientService;
+import executor.service.okhttp.ClientService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -13,10 +13,10 @@ public class ProxySourcesClientOkHttp implements ProxySourcesClient {
 
     private static final Logger LOGGER = LogManager.getLogger(ProxySourcesClientOkHttp.class);
 
-    private final ProxyClientService proxyClientService;
+    private final ClientService clientService;
 
-    public ProxySourcesClientOkHttp(ProxyClientService proxyClientService) {
-        this.proxyClientService = proxyClientService;
+    public ProxySourcesClientOkHttp(ClientService clientService) {
+        this.clientService = clientService;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class ProxySourcesClientOkHttp implements ProxySourcesClient {
         ProxyConfigHolder proxyConfigHolder = null;
 
         try {
-            proxyConfigHolder = proxyClientService.getProxy();
+            proxyConfigHolder = clientService.getProxy();
         } catch (IOException e) {
             LOGGER.error(e);
         }
