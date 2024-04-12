@@ -50,6 +50,8 @@ public class ClientService {
                 throw new IOException("Unexpected response code: " + response);
             }
             String responseBody = response.body().string();
+            // Close connection
+            response.body().close();
             return objectMapper.readValue(responseBody, objectMapper.getTypeFactory().constructType(ScenarioWrapper.class));
 
         } catch (IOException e) {
@@ -71,13 +73,17 @@ public class ClientService {
         Call call = client.newCall(request);
         Response response = call.execute();
 
+        String responseBody = response.body().string();
+        // Close connection
+        response.body().close();
+
         return objectMapper.readValue(
-                response.body().string().getBytes(StandardCharsets.UTF_8),
+                responseBody.getBytes(StandardCharsets.UTF_8),
                 ProxyConfigHolder.class
         );
     }
 
-    public void sendResult(ScenarioWrapper scenario) throws IOException {
+    public boolean sendResult(ScenarioWrapper scenario) throws IOException {
 
         String api = "/internal/set-result";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
@@ -94,6 +100,13 @@ public class ClientService {
         Call call = client.newCall(request);
         Response response = call.execute();
 
+        boolean success = response.isSuccessful();
+
         LOGGER.info("Set result response: " + response.toString());
+
+        // Close connection
+        response.body().close();
+
+        return success;
     }
 }

@@ -2,12 +2,15 @@ package executor.service.executor.scenarioexecutor;
 
 import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import executor.service.model.Scenario;
+import executor.service.model.ScenarioWrapper;
 import executor.service.model.Step;
 import executor.service.okhttp.ClientService;
 import executor.service.steps.*;
 import executor.service.utils.StepAction;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class ScenarioExecutorServiceTest {
         // Create mocked webdriver
         WebDriver mockedWebDriver = mock(WebDriver.class);
 
-        Scenario scenario = new Scenario();
+        Scenario scenario = new ScenarioWrapper();
 
         List<Step> steps = new ArrayList<>();
         Step step = new Step();
@@ -68,7 +71,7 @@ public class ScenarioExecutorServiceTest {
         // Create mocked webdriver
         WebDriver mockedWebDriver = mock(WebDriver.class);
 
-        Scenario scenario = new Scenario();
+        Scenario scenario = new ScenarioWrapper();
 
         List<Step> steps = new ArrayList<>();
         Step step = new Step();
@@ -101,7 +104,7 @@ public class ScenarioExecutorServiceTest {
         // Create mocked webdriver
         WebDriver mockedWebDriver = mock(WebDriver.class);
 
-        Scenario scenario = new Scenario();
+        Scenario scenario = new ScenarioWrapper();
 
         List<Step> steps = new ArrayList<>();
         Step step = new Step();
@@ -138,7 +141,7 @@ public class ScenarioExecutorServiceTest {
         // Create mocked webdriver
         WebDriver mockedWebDriver = mock(WebDriver.class);
 
-        Scenario scenario = new Scenario();
+        Scenario scenario = new ScenarioWrapper();
 
         List<Step> steps = new ArrayList<>();
         Step clickCssStep = new Step();
@@ -166,4 +169,33 @@ public class ScenarioExecutorServiceTest {
         verify(mockedSleep, times(1)).step(any(), any());
     }
 
+    @Test
+    public void testResult() throws IOException {
+
+        ScenarioWrapper scenario = new ScenarioWrapper();
+        scenario.setId(1L);
+        scenario.setName("Test Scenario");
+        scenario.setSite("https://www.example.com");
+        scenario.setSteps(List.of(new Step(StepAction.SLEEP.name(), "10")));
+
+        WebDriver webDriver = mock(WebDriver.class);
+
+        StepExecutionFactory stepExecutionFactory = mock(StepExecutionFactory.class);
+        when(stepExecutionFactory.createStepExecution(any())).thenReturn(new Sleep());
+
+        ClientService clientService = mock(ClientService.class);
+
+        ScenarioExecutorService scenarioExecutorService = new ScenarioExecutorService(stepExecutionFactory,
+                clientService);
+
+        scenarioExecutorService.execute(scenario, webDriver);
+
+        String expected = """
+                INFO: performing action: SLEEP ( value: 10 )
+                INFO: step execution success
+                """;
+        String actual = scenario.getResult();
+
+        Assertions.assertEquals(expected, actual);
+    }
 }
