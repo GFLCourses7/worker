@@ -66,7 +66,7 @@ public class ParallelFlowExecutorService {
 
         while (!Thread.interrupted()) {
 
-            while (threadPoolExecutor.getQueue().size() > 0) {
+            while (!threadPoolExecutor.getQueue().isEmpty()) {
                 try {
                     TimeUnit.MILLISECONDS.sleep(1000);
                 } catch (InterruptedException e) {
@@ -81,8 +81,8 @@ public class ParallelFlowExecutorService {
                 WebDriver webDriver = null;
 
                 try {
-                    webDriver = webDriverInitializer.init();
-                    executionService.execute(webDriver,
+                    //webDriver = webDriverInitializer.init();
+                    executionService.execute(webDriverInitializer,
                             scenarioSourceListener,
                             scenarioExecutor
                     );

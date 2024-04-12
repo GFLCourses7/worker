@@ -2,6 +2,7 @@ package executor.service.controller;
 
 import executor.service.listener.ScenarioSourceListener;
 import executor.service.model.Scenario;
+import executor.service.model.ScenarioWrapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,7 @@ public class ScenarioController {
     }
 
     @PostMapping("/add-scenario")
-    Scenario addScenario(@RequestBody Scenario scenario) {
+    Scenario addScenario(@RequestBody ScenarioWrapper scenario) {
         scenarioSourceListener.addScenario(scenario);
         return scenario;
     }

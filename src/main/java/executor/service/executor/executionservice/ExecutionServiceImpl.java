@@ -3,6 +3,7 @@ package executor.service.executor.executionservice;
 import executor.service.listener.ScenarioSourceListener;
 import executor.service.model.Scenario;
 import executor.service.executor.scenarioexecutor.ScenarioExecutor;
+import executor.service.webdriver.WebDriverInitializer;
 import org.openqa.selenium.WebDriver;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,13 +14,17 @@ public class ExecutionServiceImpl implements ExecutionService {
     private static final Logger logger = LogManager.getLogger(ExecutionServiceImpl.class.getName());
 
     @Override
-    public void execute(WebDriver driver, ScenarioSourceListener scenarioSourceListener, ScenarioExecutor scenarioExecutor) {
+    public void execute(WebDriverInitializer webDriverInitializer,
+                        ScenarioSourceListener scenarioSourceListener,
+                        ScenarioExecutor scenarioExecutor) {
         Scenario scenario = scenarioSourceListener.getScenario();
 
         if (scenario == null || scenario.getSteps().isEmpty()) {
             logger.info("Scenario is empty.");
             return;
         }
+
+        WebDriver driver = webDriverInitializer.init();
 
         try {
 

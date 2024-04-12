@@ -1,12 +1,10 @@
 package executor.service.okhttp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.Call;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
+import com.squareup.okhttp.*;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.Scenario;
+import executor.service.model.ScenarioWrapper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,7 +50,7 @@ public class ClientService {
                 throw new IOException("Unexpected response code: " + response);
             }
             String responseBody = response.body().string();
-            return objectMapper.readValue(responseBody, objectMapper.getTypeFactory().constructType(Scenario.class));
+            return objectMapper.readValue(responseBody, objectMapper.getTypeFactory().constructType(ScenarioWrapper.class));
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -77,5 +75,25 @@ public class ClientService {
                 response.body().string().getBytes(StandardCharsets.UTF_8),
                 ProxyConfigHolder.class
         );
+    }
+
+    public void sendResult(ScenarioWrapper scenario) throws IOException {
+
+        String api = "/internal/set-result";
+        String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
+
+        LOGGER.info("Sending result to client: " + url);
+
+        String result = objectMapper.writeValueAsString(scenario);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .method("POST", RequestBody.create(MediaType.parse("application/json"), result))
+                .build();
+
+        Call call = client.newCall(request);
+        Response response = call.execute();
+
+        LOGGER.info("Set result response: " + response.toString());
     }
 }
