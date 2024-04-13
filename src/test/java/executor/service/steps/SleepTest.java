@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.openqa.selenium.WebDriver;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SleepTest {
 
@@ -46,8 +45,10 @@ public class SleepTest {
 
     @Test
     public void testStepExecution_InvalidSleepValue() {
-        step.setValue("invalid");
-        sleepStep.step(mockWebDriver, step);
+        assertThrows(NumberFormatException.class, () -> {
+            step.setValue("invalid");
+            sleepStep.step(mockWebDriver, step);
+        });
     }
 
     @Test

@@ -26,10 +26,9 @@ public class Sleep implements StepExecution {
                 throw new IllegalArgumentException("Sleep time cannot be negative");
             }
             TimeUnit.MILLISECONDS.sleep(sleep);
-        } catch (NumberFormatException e) {
-            LOGGER.error("Invalid sleep value: {}", step.getValue(), e);
-        } catch (IllegalArgumentException | InterruptedException e) {
-            LOGGER.error(e.getMessage());
+
+        } catch (InterruptedException e) {
+            LOGGER.error(e);
         }
     }
 }

@@ -1,11 +1,13 @@
 [
   {
-    "name": "test scenario 1",
+    "name": "test scenario 2",
     "site": "http://info.cern.ch",
-    "steps" : [
+    "state": "nice",
+    "hotel": "trivago",
+    "steps": [
       {
         "action": "sleep",
-        "value": "5000"
+        "value": "7000"
       },
       {
         "action": "clickCss",
@@ -13,41 +15,27 @@
       },
       {
         "action": "sleep",
-        "value": "5:10"
+        "value": "3000"
       },
       {
         "action": "clickXpath",
-        "value": "/html/body/p"
-      }
-    ]
-  },
-  {
-    "name": "test scenario 1",
-    "site": "https://api.ipify.org/?format=json",
-    "steps" : [
+        "value": "/html/body/dl/dt[7]/a"
+      },
       {
         "action": "sleep",
-        "value": "5000"
-      }
-    ]
-  },
-  {
-    "name": "test scenario 1",
-    "site": "https://api.ipify.org/?format=json",
-    "steps" : [
+        "value": "3000"
+      },
+      {
+        "action": "enter",
+        "value": "password"
+      },
+      {
+        "action": "clickCss",
+        "value": "body > nextid > dl > dd:nth-child(40) > a"
+      },
       {
         "action": "sleep",
-        "value": "5000"
-      }
-    ]
-  },
-  {
-    "name": "test scenario 1",
-    "site": "https://api.ipify.org/?format=json",
-    "steps" : [
-      {
-        "action": "sleep",
-        "value": "5000"
+        "value": "3000"
       }
     ]
   },

@@ -65,6 +65,15 @@ public class ParallelFlowExecutorService {
         LOGGER.info("Start executing scenarios in threads ");
 
         while (!Thread.interrupted()) {
+
+            while (!threadPoolExecutor.getQueue().isEmpty()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
             threadPoolExecutor.execute(() -> {
                 // If executionService execute throws an error
                 // try/catch will catch it and won't allow thread
@@ -72,8 +81,8 @@ public class ParallelFlowExecutorService {
                 WebDriver webDriver = null;
 
                 try {
-                    webDriver = webDriverInitializer.init();
-                    executionService.execute(webDriver,
+                    //webDriver = webDriverInitializer.init();
+                    executionService.execute(webDriverInitializer,
                             scenarioSourceListener,
                             scenarioExecutor
                     );
