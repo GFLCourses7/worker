@@ -28,6 +28,9 @@ public class PropertiesConfigHolder {
     @Value("${executorservice.thread.maxPoolSize}")
     private int maxPoolSize;
 
+    @Value("${executorservice.thread.queueCapacity:100}")
+    private int maxQueueCapacity;
+
     public WebDriverConfig getWebDriverConfig() {
         return new WebDriverConfig(webDriverExecutable, userAgent, pageLoadTimeout, driverWait);
     }
@@ -38,5 +41,9 @@ public class PropertiesConfigHolder {
 
     public int getMaxPoolSize() {
         return maxPoolSize;
+    }
+
+    public int getMaxQueueCapacity() {
+        return maxQueueCapacity;
     }
 }
