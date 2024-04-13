@@ -1,15 +1,35 @@
 package executor.service.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import executor.service.model.ThreadPoolConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class BeanConfigTest {
+
+    @Mock
+    private PropertiesConfigHolder propertiesConfigHolder;
+
+    private BeanConfig beanConfig;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+        beanConfig = new BeanConfig(propertiesConfigHolder);
+    }
 
     @Test
     public void testObjectMapper() throws IOException {
@@ -34,7 +54,7 @@ public class BeanConfigTest {
                 integer3
         );
 
-        ObjectMapper objectMapper = new BeanConfig().getObjectMapperBean();
+        ObjectMapper objectMapper = beanConfig.getObjectMapperBean();
 
         BeanConfigTest.TestClass actual = objectMapper.readValue(
                 expectedJson.getBytes(StandardCharsets.UTF_8),
@@ -42,6 +62,35 @@ public class BeanConfigTest {
         );
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testOkHttpClient() {
+        OkHttpClient okHttpClientBean = beanConfig.getOkHttpClientBean();
+
+        assertNotNull(okHttpClientBean);
+        assertInstanceOf(OkHttpClient.class, okHttpClientBean);
+    }
+
+    @Test
+    void testThreadPoolExecutor() {
+        ThreadPoolConfig fakeThreadPoolConfig = new ThreadPoolConfig(10, 200L);
+        int maxPoolSize = 100;
+        int maxQueueCapacity = 50;
+
+        when(propertiesConfigHolder.getThreadPoolConfig()).thenReturn(fakeThreadPoolConfig);
+        when(propertiesConfigHolder.getMaxPoolSize()).thenReturn(maxPoolSize);
+        when(propertiesConfigHolder.getMaxQueueCapacity()).thenReturn(maxQueueCapacity);
+
+        ThreadPoolExecutor threadPoolExecutorBean = beanConfig.getThreadPoolExecutorBean();
+
+        assertNotNull(threadPoolExecutorBean);
+        assertEquals(fakeThreadPoolConfig.getCorePoolSize(), threadPoolExecutorBean.getCorePoolSize());
+        assertEquals(maxPoolSize, threadPoolExecutorBean.getMaximumPoolSize());
+        assertEquals(fakeThreadPoolConfig.getKeepAliveTime(),
+                threadPoolExecutorBean.getKeepAliveTime(TimeUnit.MILLISECONDS));
+        assertInstanceOf(LinkedBlockingQueue.class, threadPoolExecutorBean.getQueue());
+        assertEquals(maxQueueCapacity, threadPoolExecutorBean.getQueue().remainingCapacity());
     }
 
     static class TestClass {

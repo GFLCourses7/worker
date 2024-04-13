@@ -3,8 +3,12 @@ package executor.service.okhttp;
 import com.squareup.okhttp.mockwebserver.MockResponse;
 import com.squareup.okhttp.mockwebserver.MockWebServer;
 import executor.service.config.BeanConfig;
+import executor.service.config.PropertiesConfigHolder;
 import executor.service.model.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,6 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ClientServiceTest {
+
+    @Mock
+    private PropertiesConfigHolder propertiesConfigHolder;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     public void testFetchScenario() throws IOException {
@@ -51,8 +63,7 @@ public class ClientServiceTest {
         expected.setSite(site);
         expected.setResult(result);
         expected.setSteps(Arrays.stream(new Step[] {new Step(stepAction, stepValue)}).toList());
-
-        BeanConfig beanConfig = new BeanConfig();
+        BeanConfig beanConfig = new BeanConfig(propertiesConfigHolder);
 
         ClientService proxyClientService = new ClientService(
                 "http://" + server.getHostName(),
@@ -101,7 +112,7 @@ public class ClientServiceTest {
                 new ProxyCredentials(proxyUsername, proxyPassword)
         );
 
-        BeanConfig beanConfig = new BeanConfig();
+        BeanConfig beanConfig = new BeanConfig(propertiesConfigHolder);
 
         ClientService proxyClientService = new ClientService(
                 "http://" + server.getHostName(),
@@ -130,7 +141,7 @@ public class ClientServiceTest {
 
         ScenarioWrapper scenario = new ScenarioWrapper(1L, "TEST_RESULT");
 
-        BeanConfig beanConfig = new BeanConfig();
+        BeanConfig beanConfig = new BeanConfig(propertiesConfigHolder);
 
         ClientService proxyClientService = new ClientService(
                 "http://" + server.getHostName(),

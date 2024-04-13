@@ -4,11 +4,22 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.squareup.okhttp.OkHttpClient;
+import executor.service.model.ThreadPoolConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 @Configuration
 public class BeanConfig {
+
+    private final PropertiesConfigHolder propertiesConfigHolder;
+
+    public BeanConfig(PropertiesConfigHolder propertiesConfigHolder) {
+        this.propertiesConfigHolder = propertiesConfigHolder;
+    }
 
     @Bean
     public ObjectMapper getObjectMapperBean() {
@@ -28,5 +39,18 @@ public class BeanConfig {
     public OkHttpClient getOkHttpClientBean() {
 
         return new OkHttpClient();
+    }
+
+    @Bean
+    public ThreadPoolExecutor getThreadPoolExecutorBean() {
+        ThreadPoolConfig threadPoolConfig = propertiesConfigHolder.getThreadPoolConfig();
+
+        return new ThreadPoolExecutor(
+                threadPoolConfig.getCorePoolSize(),
+                propertiesConfigHolder.getMaxPoolSize(),
+                threadPoolConfig.getKeepAliveTime(),
+                TimeUnit.MILLISECONDS,
+                new LinkedBlockingQueue<Runnable>(propertiesConfigHolder.getMaxQueueCapacity())
+        );
     }
 }
