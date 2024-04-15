@@ -35,7 +35,7 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
 
     @Override
     public WebDriver init() {
-        LOGGER.info("Initializing WebDriver...");
+        LOGGER.info("Starting WebDriver configuration...");
 
         WebDriverConfig webDriverConfig = propertiesConfigHolder.getWebDriverConfig();
         ChromeOptions options = configureChromeOptions(webDriverConfig);
@@ -48,12 +48,21 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
             clearMemory = configureProxy(options, proxyConfigHolder);
         }
 
-        ChromeDriver driver = createChromeDriver(options);
-        configureTimeouts(driver, webDriverConfig);
+        ChromeDriver driver = null;
+        try {
+            LOGGER.info("Initializing WebDriver...");
+            driver = createChromeDriver(options);
+            configureTimeouts(driver, webDriverConfig);
 
-        // Clear memory after driver has been initialized
-        if (clearMemory != null)
-            clearMemory.run();
+        } catch (Exception e) {
+            LOGGER.error("WebDriver initialization failed");
+            throw e;
+
+        } finally {
+            // Clear memory after driver has been initialized
+            if (clearMemory != null)
+                clearMemory.run();
+        }
 
         LOGGER.info("WebDriver initialized successfully.");
         return driver;
