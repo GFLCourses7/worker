@@ -18,13 +18,13 @@ public class ScenarioController {
     }
 
     @PostMapping("/add-scenario")
-    Scenario addScenario(@RequestBody ScenarioWrapper scenario) {
+    public Scenario addScenario(@RequestBody ScenarioWrapper scenario) {
         scenarioSourceListener.addScenario(scenario);
         return scenario;
     }
+
     @GetMapping("/notify-scenario")
     public void notifyScenarioAvailability() {
         scenarioSourceListener.notifyListener();
     }
-
 }

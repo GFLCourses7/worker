@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class ClientService {
@@ -36,51 +35,20 @@ public class ClientService {
     }
 
     public Scenario fetchScenario() {
-
         String api = "/internal/get-scenario";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-            if (!response.isSuccessful()) {
-                throw new IOException("Unexpected response code: " + response);
-            }
-            String responseBody = response.body().string();
-            // Close connection
-            response.body().close();
-            return objectMapper.readValue(responseBody, objectMapper.getTypeFactory().constructType(ScenarioWrapper.class));
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        LOGGER.info("Fetching scenario from {}", url);
+        return getResource(url, ScenarioWrapper.class);
     }
 
-    public ProxyConfigHolder getProxy() throws IOException {
+    public ProxyConfigHolder fetchProxy() {
 
         String api = "/internal/get-proxy";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
-        LOGGER.info("Fetching proxy from " + url);
+        LOGGER.info("Fetching proxy from {}", url);
 
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Call call = client.newCall(request);
-        Response response = call.execute();
-
-        String responseBody = response.body().string();
-        // Close connection
-        response.body().close();
-
-        return objectMapper.readValue(
-                responseBody.getBytes(StandardCharsets.UTF_8),
-                ProxyConfigHolder.class
-        );
+        return getResource(url, ProxyConfigHolder.class);
     }
 
     public boolean sendResult(ScenarioWrapper scenario) throws IOException {
@@ -88,7 +56,7 @@ public class ClientService {
         String api = "/internal/set-result";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
-        LOGGER.info("Sending result to client: " + url);
+        LOGGER.info("Sending result to client: {}", url);
 
         String result = objectMapper.writeValueAsString(scenario);
 
@@ -102,11 +70,31 @@ public class ClientService {
 
         boolean success = response.isSuccessful();
 
-        LOGGER.info("Set result response: " + response.toString());
+        LOGGER.info("Set result response: {}", response);
 
         // Close connection
         response.body().close();
 
         return success;
+    }
+
+    private <T> T getResource(String url, Class<T> resource) {
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response code: " + response);
+            }
+            String responseBody = response.body().string();
+            // Close connection
+            response.body().close();
+            return objectMapper.readValue(responseBody, objectMapper.getTypeFactory().constructType(resource));
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

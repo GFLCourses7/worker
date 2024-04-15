@@ -81,7 +81,7 @@ public class ClientServiceTest {
     }
 
     @Test
-    public void testGetProxy() throws IOException {
+    public void testFetchProxy() throws IOException {
 
         String proxyHost = "host";
         Integer proxyPort = 8080;
@@ -121,7 +121,7 @@ public class ClientServiceTest {
                 beanConfig.getObjectMapperBean()
         );
 
-        ProxyConfigHolder actual = proxyClientService.getProxy();
+        ProxyConfigHolder actual = proxyClientService.fetchProxy();
 
         assertEquals(expected, actual);
 
