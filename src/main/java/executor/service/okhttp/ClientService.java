@@ -56,7 +56,7 @@ public class ClientService {
         String api = "/internal/set-result";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
-        LOGGER.info("Sending result to client: " + url);
+        LOGGER.info("Sending result to client: {}", url);
 
         String result = objectMapper.writeValueAsString(scenario);
 
@@ -70,7 +70,7 @@ public class ClientService {
 
         boolean success = response.isSuccessful();
 
-        LOGGER.info("Set result response: " + response.toString());
+        LOGGER.info("Set result response: {}", response);
 
         // Close connection
         response.body().close();
