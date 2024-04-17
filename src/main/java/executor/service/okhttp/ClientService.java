@@ -5,6 +5,8 @@ import com.squareup.okhttp.*;
 import executor.service.model.ProxyConfigHolder;
 import executor.service.model.Scenario;
 import executor.service.model.ScenarioWrapper;
+import executor.service.security.LoginRequest;
+import executor.service.security.LoginResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,22 +24,33 @@ public class ClientService {
     private final OkHttpClient client;
     private final ObjectMapper objectMapper;
 
+    private final String login;
+    private final String password;
+
+    protected String jwtToken;
+
     public ClientService(
             @Value("${executorservice.client.host}") String client_host,
             @Value("${executorservice.client.port}") Integer client_port,
             OkHttpClient client,
-            ObjectMapper objectMapper
-    ) {
+            ObjectMapper objectMapper,
+            @Value("${CLIENT_AUTH_USERNAME}") String login,
+            @Value("${CLIENT_AUTH_PASSWORD}") String password) {
         CLIENT_HOST = client_host;
         CLIENT_PORT = client_port;
         this.client = client;
         this.objectMapper = objectMapper;
+        this.login = login;
+        this.password = password;
     }
 
     public Scenario fetchScenario() {
+
         String api = "/internal/get-scenario";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
+
         LOGGER.info("Fetching scenario from {}", url);
+
         return getResource(url, ScenarioWrapper.class);
     }
 
@@ -62,6 +75,7 @@ public class ClientService {
 
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("Authorization", "Bearer " + jwtToken)
                 .method("POST", RequestBody.create(MediaType.parse("application/json"), result))
                 .build();
 
@@ -78,9 +92,37 @@ public class ClientService {
         return success;
     }
 
-    private <T> T getResource(String url, Class<T> resource) {
+    public void login() throws IOException {
+
+        String api = "/api/auth/authenticate";
+        String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
+
+        LOGGER.info("attempting authentication to client: {}", url);
+
+        String loginRequest = objectMapper.writeValueAsString(new LoginRequest(login, password));
+
         Request request = new Request.Builder()
                 .url(url)
+                .addHeader("Authorization", "Bearer " + jwtToken)
+                .method("POST", RequestBody.create(MediaType.parse("application/json"), loginRequest))
+                .build();
+
+        Call call = client.newCall(request);
+        Response response = call.execute();
+
+        if (!response.isSuccessful())
+            throw new IOException("authentication failed");
+
+        LoginResponse loginResponse = objectMapper.readValue(response.body().bytes(), LoginResponse.class);
+        LOGGER.info("extracted token {}", loginResponse.getToken());
+        jwtToken = loginResponse.getToken();
+    }
+
+    private <T> T getResource(String url, Class<T> resource) {
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + jwtToken)
                 .build();
 
         try {
