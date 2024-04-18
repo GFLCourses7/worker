@@ -33,15 +33,13 @@ public class ClientService {
             @Value("${executorservice.client.host}") String client_host,
             @Value("${executorservice.client.port}") Integer client_port,
             OkHttpClient client,
-            ObjectMapper objectMapper,
-            @Value("${CLIENT_AUTH_USERNAME}") String login,
-            @Value("${CLIENT_AUTH_PASSWORD}") String password) {
+            ObjectMapper objectMapper) {
         CLIENT_HOST = client_host;
         CLIENT_PORT = client_port;
         this.client = client;
         this.objectMapper = objectMapper;
-        this.login = login;
-        this.password = password;
+        this.login = System.getProperty("CLIENT_AUTH_USERNAME");
+        this.password = System.getProperty("CLIENT_AUTH_PASSWORD");
     }
 
     public Scenario fetchScenario() {

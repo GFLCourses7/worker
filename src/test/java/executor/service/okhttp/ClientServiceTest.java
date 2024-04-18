@@ -70,8 +70,7 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean(),
-                "username", "password");
+                beanConfig.getObjectMapperBean());
 
         ScenarioWrapper actual = (ScenarioWrapper) proxyClientService.fetchScenario();
 
@@ -119,8 +118,7 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean(),
-                "username", "password");
+                beanConfig.getObjectMapperBean());
 
         ProxyConfigHolder actual = proxyClientService.fetchProxy();
 
@@ -148,8 +146,7 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean(),
-                "username", "password");
+                beanConfig.getObjectMapperBean());
 
         boolean success = proxyClientService.sendResult(scenario);
 
@@ -182,8 +179,7 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean(),
-                "username", "password");
+                beanConfig.getObjectMapperBean());
 
         proxyClientService.login();
 
