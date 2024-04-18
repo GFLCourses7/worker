@@ -5,6 +5,7 @@ import com.squareup.okhttp.mockwebserver.MockWebServer;
 import executor.service.config.BeanConfig;
 import executor.service.config.PropertiesConfigHolder;
 import executor.service.model.*;
+import executor.service.security.LoginResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -69,8 +70,8 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean()
-        );
+                beanConfig.getObjectMapperBean(),
+                "username", "password");
 
         ScenarioWrapper actual = (ScenarioWrapper) proxyClientService.fetchScenario();
 
@@ -118,8 +119,8 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean()
-        );
+                beanConfig.getObjectMapperBean(),
+                "username", "password");
 
         ProxyConfigHolder actual = proxyClientService.fetchProxy();
 
@@ -147,14 +148,50 @@ public class ClientServiceTest {
                 "http://" + server.getHostName(),
                 server.getPort(),
                 beanConfig.getOkHttpClientBean(),
-                beanConfig.getObjectMapperBean()
-        );
+                beanConfig.getObjectMapperBean(),
+                "username", "password");
 
         boolean success = proxyClientService.sendResult(scenario);
 
         server.shutdown();
 
         assertTrue(success);
+    }
+
+    @Test
+    public void testLogin() throws IOException {
+
+        String expected = "test_token";
+        String actual;
+
+        LoginResponse loginResponse = new LoginResponse(expected);
+
+        BeanConfig beanConfig = new BeanConfig(propertiesConfigHolder);
+
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse().setBody(beanConfig.getObjectMapperBean().writeValueAsString(loginResponse)));
+        server.enqueue(new MockResponse().setBody(beanConfig.getObjectMapperBean().writeValueAsString(loginResponse)));
+        server.enqueue(new MockResponse().setBody(beanConfig.getObjectMapperBean().writeValueAsString(loginResponse)));
+        server.start();
+
+        ScenarioWrapper scenario = new ScenarioWrapper(1L, "TEST_RESULT");
+
+
+
+        ClientService proxyClientService = new ClientService(
+                "http://" + server.getHostName(),
+                server.getPort(),
+                beanConfig.getOkHttpClientBean(),
+                beanConfig.getObjectMapperBean(),
+                "username", "password");
+
+        proxyClientService.login();
+
+        actual = proxyClientService.jwtToken;
+
+        server.shutdown();
+
+        assertEquals(expected, actual);
     }
 
 }
