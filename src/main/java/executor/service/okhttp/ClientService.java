@@ -103,7 +103,6 @@ public class ClientService {
 
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Authorization", "Bearer " + jwtToken)
                 .method("POST", RequestBody.create(MediaType.parse("application/json"), loginRequest))
                 .build();
 
