@@ -75,6 +75,10 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         if (webDriverConfig.getUserAgent() != null) {
             options.addArguments("--user-agent=" + webDriverConfig.getUserAgent());
         }
+
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-gpu");
+
         return options;
     }
 

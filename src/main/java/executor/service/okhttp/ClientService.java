@@ -39,7 +39,9 @@ public class ClientService {
         this.client = client;
         this.objectMapper = objectMapper;
         this.login = System.getProperty("CLIENT_AUTH_USERNAME");
+        System.out.println(login);
         this.password = System.getProperty("CLIENT_AUTH_PASSWORD");
+        System.out.println(password);
     }
 
     public Scenario fetchScenario() {
