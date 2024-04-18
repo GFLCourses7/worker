@@ -69,6 +69,9 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
     }
 
     private ChromeOptions configureChromeOptions(WebDriverConfig webDriverConfig) {
+
+        System.setProperty("webdriver.chrome.verboseLogging", "true");
+
         ChromeOptions options = new ChromeOptions();
         System.setProperty(WEBDRIVER_PROPERTY_NAME, webDriverConfig.getWebDriverExecutable());
 
