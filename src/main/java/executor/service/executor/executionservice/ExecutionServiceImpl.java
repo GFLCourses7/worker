@@ -24,9 +24,10 @@ public class ExecutionServiceImpl implements ExecutionService {
             return;
         }
 
-        WebDriver driver = webDriverInitializer.init();
 
+        WebDriver driver = null;
         try {
+            driver = webDriverInitializer.init();
 
             logger.info("Starting execution for scenario: {}", scenario.getName());
 
@@ -36,10 +37,13 @@ public class ExecutionServiceImpl implements ExecutionService {
             logger.info("Executing scenario...");
             scenarioExecutor.execute(scenario, driver);
         } catch (Exception e) {
+            scenarioSourceListener.addScenario(scenario);
             logger.error("Exception occurred during scenario execution: ", e);
         } finally {
-            logger.info("Quitting WebDriver...");
-            driver.quit();
+            if (driver!= null) {
+                logger.info("Quitting WebDriver...");
+                driver.quit();
+            }
         }
     }
 }
