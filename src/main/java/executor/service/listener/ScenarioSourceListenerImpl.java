@@ -39,7 +39,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
     @Override
     public void addScenario(Scenario scenario) {
 
-        if (scenario.getSite() == null || scenario.getSite().isEmpty()) {
+        if (scenario == null || scenario.getSite() == null || scenario.getSite().isEmpty()) {
 
             logger.info("client returned empty scenario");
             return;
