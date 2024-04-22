@@ -38,6 +38,13 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
 
     @Override
     public void addScenario(Scenario scenario) {
+
+        if (scenario.getSite() == null || scenario.getSite().isEmpty()) {
+
+            logger.info("client returned empty scenario");
+            return;
+        }
+
         scenarios.add(scenario);
     }
 
@@ -46,7 +53,7 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         // Auth
         clientService.login();
         // Fetch scenarios
-        scenarios.add(clientService.fetchScenario());
+        addScenario(clientService.fetchScenario());
     }
 
 
