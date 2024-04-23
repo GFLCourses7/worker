@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ClientService {
@@ -40,6 +41,36 @@ public class ClientService {
         this.objectMapper = objectMapper;
         this.login = System.getProperty("CLIENT_AUTH_USERNAME");
         this.password = System.getProperty("CLIENT_AUTH_PASSWORD");
+    }
+
+    public List<Scenario> fetchScenarios() {
+
+        String api = "/internal/get-scenarios";
+        String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
+
+        LOGGER.info("Fetching scenarios from {}", url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + jwtToken)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response code: " + response);
+            }
+            String responseBody = response.body().string();
+            // Close connection
+            response.body().close();
+            return objectMapper.readValue(
+                    responseBody,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, ScenarioWrapper.class)
+            );
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Scenario fetchScenario() {

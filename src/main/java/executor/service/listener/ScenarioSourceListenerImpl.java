@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Optional;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
@@ -53,7 +55,9 @@ public class ScenarioSourceListenerImpl implements ScenarioSourceListener {
         // Auth
         clientService.login();
         // Fetch scenarios
-        addScenario(clientService.fetchScenario());
+        Optional.ofNullable(clientService.fetchScenarios())
+                .orElse(new ArrayList<>())
+                .forEach(this::addScenario);
     }
 
 

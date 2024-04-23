@@ -40,7 +40,13 @@ public class ChromeDriverInitializer implements WebDriverInitializer {
         WebDriverConfig webDriverConfig = propertiesConfigHolder.getWebDriverConfig();
         ChromeOptions options = configureChromeOptions(webDriverConfig);
 
-        ProxyConfigHolder proxyConfigHolder = proxySourcesClient.getProxy();
+        ProxyConfigHolder proxyConfigHolder = null;
+        try {
+            proxyConfigHolder = proxySourcesClient.getProxy();
+        } catch (Exception e) {
+            LOGGER.error("error occurred during fetching a proxy {}", e.getMessage());
+        }
+
         Runnable clearMemory = () -> {
         };
         if (proxyConfigHolder != null) {

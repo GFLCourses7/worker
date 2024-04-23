@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,6 +26,64 @@ public class ClientServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    public void testFetchScenarios() throws IOException {
+
+        Long id = 1L;
+        String name = "test_name";
+        String site = "http://info.cern.ch";
+        String result = "INFO: test_result";
+        String stepAction = "sleep";
+        String stepValue = "5000";
+
+        String expectedJson = String.format("""
+                [
+                    {
+                        "id": %s,
+                        "name": "%s",
+                        "site": "%s",
+                        "result": "%s",
+                        "steps": [
+                            {
+                                "action": "%s",
+                                "value": "%s"
+                            }
+                        ]
+                    }
+                ]
+                """, id, name, site, result, stepAction, stepValue);
+
+        MockWebServer server = new MockWebServer();
+        server.enqueue(new MockResponse().setBody(expectedJson));
+        server.enqueue(new MockResponse().setBody(expectedJson));
+        server.enqueue(new MockResponse().setBody(expectedJson));
+        server.start();
+
+        ScenarioWrapper scenarioWrapper = new ScenarioWrapper();
+        scenarioWrapper.setId(id);
+        scenarioWrapper.setName(name);
+        scenarioWrapper.setSite(site);
+        scenarioWrapper.setResult(result);
+        scenarioWrapper.setSteps(Arrays.stream(new Step[] {new Step(stepAction, stepValue)}).toList());
+
+        List<ScenarioWrapper> expected = List.of(scenarioWrapper);
+
+        BeanConfig beanConfig = new BeanConfig(propertiesConfigHolder);
+
+        ClientService proxyClientService = new ClientService(
+                "http://" + server.getHostName(),
+                server.getPort(),
+                beanConfig.getOkHttpClientBean(),
+                beanConfig.getObjectMapperBean());
+
+        List<?> actual = proxyClientService.fetchScenarios();
+
+        assertEquals(expected, actual);
+
+        server.shutdown();
+
     }
 
     @Test

@@ -65,6 +65,7 @@ public class ScenarioSourceListenerImplTest {
     @Test
     public void testAddScenario() {
         Scenario scenario = new Scenario();
+        scenario.setSite("test site");
 
 
         scenarioSourceListener = new ScenarioSourceListenerImpl(clientService);
