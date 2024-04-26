@@ -45,7 +45,7 @@ public class ClientService {
 
     public List<Scenario> fetchScenarios() {
 
-        String api = "/internal/get-scenarios";
+        String api = "/internal/scenarios";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Fetching scenarios from {}", url);
@@ -75,7 +75,7 @@ public class ClientService {
 
     public Scenario fetchScenario() {
 
-        String api = "/internal/get-scenario";
+        String api = "/internal/scenario";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Fetching scenario from {}", url);
@@ -85,7 +85,7 @@ public class ClientService {
 
     public ProxyConfigHolder fetchProxy() {
 
-        String api = "/internal/get-proxy";
+        String api = "/internal/proxy";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Fetching proxy from {}", url);
@@ -95,7 +95,7 @@ public class ClientService {
 
     public boolean sendResult(ScenarioWrapper scenario) throws IOException {
 
-        String api = "/internal/set-result";
+        String api = "/internal/result";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Sending result to client: {}", url);
