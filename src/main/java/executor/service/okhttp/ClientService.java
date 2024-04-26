@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ClientService {
@@ -42,9 +43,39 @@ public class ClientService {
         this.password = System.getProperty("CLIENT_AUTH_PASSWORD");
     }
 
+    public List<Scenario> fetchScenarios() {
+
+        String api = "/internal/scenarios";
+        String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
+
+        LOGGER.info("Fetching scenarios from {}", url);
+
+        Request request = new Request.Builder()
+                .url(url)
+                .addHeader("Authorization", "Bearer " + jwtToken)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response code: " + response);
+            }
+            String responseBody = response.body().string();
+            // Close connection
+            response.body().close();
+            return objectMapper.readValue(
+                    responseBody,
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, ScenarioWrapper.class)
+            );
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Scenario fetchScenario() {
 
-        String api = "/internal/get-scenario";
+        String api = "/internal/scenario";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Fetching scenario from {}", url);
@@ -54,7 +85,7 @@ public class ClientService {
 
     public ProxyConfigHolder fetchProxy() {
 
-        String api = "/internal/get-proxy";
+        String api = "/internal/proxy";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Fetching proxy from {}", url);
@@ -64,7 +95,7 @@ public class ClientService {
 
     public boolean sendResult(ScenarioWrapper scenario) throws IOException {
 
-        String api = "/internal/set-result";
+        String api = "/internal/result";
         String url = String.format("%s:%s%s", CLIENT_HOST, CLIENT_PORT, api);
 
         LOGGER.info("Sending result to client: {}", url);
@@ -111,7 +142,7 @@ public class ClientService {
             throw new IOException("authentication failed");
 
         LoginResponse loginResponse = objectMapper.readValue(response.body().bytes(), LoginResponse.class);
-        LOGGER.info("extracted token {}", loginResponse.getToken());
+        LOGGER.info("extracted token");
         jwtToken = loginResponse.getToken();
     }
 
