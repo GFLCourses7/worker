@@ -142,7 +142,7 @@ public class ClientService {
             throw new IOException("authentication failed");
 
         LoginResponse loginResponse = objectMapper.readValue(response.body().bytes(), LoginResponse.class);
-        LOGGER.info("extracted token {}", loginResponse.getToken());
+        LOGGER.info("extracted token");
         jwtToken = loginResponse.getToken();
     }
 
