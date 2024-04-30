@@ -31,8 +31,10 @@ public class ExecutionServiceImpl implements ExecutionService {
 
             logger.info("Starting execution for scenario: {}", scenario.getName());
 
-            logger.info("Navigating to site: {}", scenario.getSite());
-            driver.get(scenario.getSite());
+            String site = scenario.getSite();
+            logger.info("Navigating to site: {}", site);
+            if (!site.startsWith("http")) site = "http://" + site;
+            driver.get(site);
 
             logger.info("Executing scenario...");
             scenarioExecutor.execute(scenario, driver);
@@ -40,7 +42,7 @@ public class ExecutionServiceImpl implements ExecutionService {
             scenarioSourceListener.addScenario(scenario);
             logger.error("Exception occurred during scenario execution: ", e);
         } finally {
-            if (driver!= null) {
+            if (driver != null) {
                 logger.info("Quitting WebDriver...");
                 driver.quit();
             }

@@ -1,10 +1,10 @@
 package executor.service.executor.scenarioexecutor;
 
+import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import executor.service.model.Scenario;
 import executor.service.model.ScenarioWrapper;
 import executor.service.okhttp.ClientService;
 import executor.service.steps.StepExecution;
-import executor.service.factory.stepexecutionfactory.StepExecutionFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -38,19 +38,22 @@ public class ScenarioExecutorService implements ScenarioExecutor {
             try {
                 StepExecution stepExecution = stepExecutionFactory.createStepExecution(step.getAction());
                 log.append(String.format("INFO: performing action: %s ( value: %s )\n", step.getAction(), step.getValue()));
-                LOGGER.info(String.format("performing action: %s ( value: %s )", step.getAction(), step.getValue()));
+                LOGGER.info(String.format("Performing action: %s ( value: %s )", step.getAction(), step.getValue()));
 
                 stepExecution.step(webDriver, step);
                 log.append("INFO: step execution success\n");
-                LOGGER.info("step execution success");
+                LOGGER.info("Step execution success");
 
             } catch (Exception e) {
 
-                log.append("ERROR: step execution failed\n");
-                LOGGER.error("step execution failed " + e.getMessage());
+                String error = e.getMessage();
+                log.append("ERROR: step execution failed: ")
+                        .append(error, 0, error.indexOf("\n"))
+                        .append("\n");
+                LOGGER.error("Step execution failed {}", error);
             }
         });
-        LOGGER.info("finished scenario step execution");
+        LOGGER.info("Finished scenario step execution");
 
         sendResult(scenario, log.toString());
     }
@@ -61,11 +64,11 @@ public class ScenarioExecutorService implements ScenarioExecutor {
         scenarioWrapper.setResult(log);
 
         try {
-            LOGGER.info("sending result to client");
+            LOGGER.info("Sending result to client");
             clientService.sendResult(scenarioWrapper);
-            LOGGER.info("result sent successfully");
+            LOGGER.info("Result sent successfully");
         } catch (IOException e) {
-            LOGGER.error("result request failed " + e);
+            LOGGER.error("Result request failed {}", e.getMessage());
         }
     }
 }
